@@ -113,12 +113,14 @@ class Strategy {
 		this.modid = modid;
 	}
 	setup() {
+		let _this = this;
+		let len = strats.length;
 		allStrats.push({
 			active: 0,
 			currentPos: 1,
 			currentScore: 0,
 			name: this.name,
-			pickMove: this.moveFunction
+			pickMove: () => _this.moveFunction(strats[len].currentPos)
 		});
 	}
 	toProject(requiredOps, requiredProjects=["projectButton20"]) {
@@ -139,7 +141,7 @@ class Strategy {
 					currentPos: 1,
 					currentScore: 0,
 					name: nameLocal,
-					pickMove: moveFunctionLocal
+					pickMove: () => moveFunctionLocal(strats[len].currentPos)
 				})
 				var stratList = document.getElementById("stratPicker");
 				var el = document.createElement("option");

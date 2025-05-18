@@ -16,7 +16,13 @@ clipHooks.push(() => {
 		)
 		.setup() // add this project to the list contenders
 	); // push this to a local variable for debugging
-	new Strategy("A100 v2", ()=>2, "A100 but exactly the same", 2, "obsceneMod").toProject(5000, ["projectButton60"]).setup();
+	new Strategy("ENIGMA", (a)=>{
+		console.log(a);
+		const biggestPayoff = findBiggestPayoff();
+		const greedyFactor = Math.random() >= 0.1; // will we be greedy?
+		if(biggestPayoff == 1 || biggestPayoff == 3) return greedyFactor ? 1 : 2;
+		return greedyFactor ? 2 : 1;
+	}, "Be GREEDY 90% of the time and GENEROUS the other 10%", 2, "obsceneMod").toProject(5000, ["projectButton60"]).setup();
 }); // push into the hooks
 // Cheating functions for testing from base game, ignore:
 function cheatClips() {
