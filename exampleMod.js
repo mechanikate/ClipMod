@@ -17,7 +17,6 @@ clipHooks.push(() => {
 		.setup() // add this project to the list contenders
 	); // push this to a local variable for debugging
 	new Strategy("ENIGMA", (a)=>{
-		console.log(a);
 		const biggestPayoff = findBiggestPayoff();
 		const greedyFactor = Math.random() >= 0.1; // will we be greedy?
 		if(biggestPayoff == 1 || biggestPayoff == 3) return greedyFactor ? 1 : 2;
