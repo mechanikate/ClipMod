@@ -16,8 +16,8 @@ clipHooks.push(() => {
 		)
 		.setup() // add this project to the list contenders
 	); // push this to a local variable for debugging
+	new Strategy("A100 v2", ()=>2, "A100 but exactly the same", 2, "obsceneMod").toProject(5000, ["projectButton60"]).setup();
 }); // push into the hooks
-
 // Cheating functions for testing from base game, ignore:
 function cheatClips() {
     clips = clips + 100000000;

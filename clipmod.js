@@ -5,6 +5,7 @@
  */
 var clipHooks = [];
 var moddedPurchased = [];
+var moddedProjects = {}; // stores all of the projects made by ClipMod mods
 clipHooks.push(() => {
 	console.log("ClipMod enabled.");
 });
@@ -14,8 +15,11 @@ const clipInit = () => {
     clipHooks.forEach(hook => hook()); // run each hook on init
     console.log("(ClipMod) Hooks done."); // alert the user we're all ready
 }
+const isPurchased = (modid, pid) => !!moddedProjects[modid][pid].obj.flag; // is this project purchased? we have to use !! here because the flag value is 0 or 1, not false or true
+const isPurchasedVanilla = id => !!(setIfBlank(projects.filter(idToCompare => id == idToCompare.id), [{flag: 0}])[0].flag);
 const sufficient = (balance, price) => (typeof price === "number" && typeof balance === "number") ? balance>=price : true; // if any of price or balance aren't a number, return true as they aren't a requirement. otherwise, compare the prices and return if the player has enough
 const clampIfNaN = x => typeof x === "number" ? x : 0; // if it is a number, keep. if it isn't a number, set to 0.
+const setIfBlank = (val, defaulting) => val == undefined || (Array.isArray(val) && val.length == 0) ? defaulting : val;
 class Project {
 	constructor(name, description, pid, price, requirement, display, todo, modid) {
 		this.name = name;
@@ -36,7 +40,7 @@ class Project {
 		if(typeof this.price["trust"] === "number") result.push(`${this.price["trust"]} trust`);
 		if(typeof this.price["mws"] === "number") result.push(`${this.price["mws"]} MW-seconds`);
 		if(typeof this.price["yomi"] === "number") result.push(`${this.price["yomi"]} yomi`);
-		if(typeof this.price[""])
+		if(typeof this.price["honor"] === "number") result.push(`${this.price["honor"]} honor`);
 		if(!result.length) return "";
 		return `(${result.join(", ")})`;
 	}
@@ -55,12 +59,17 @@ class Project {
 		var localMWsPrice = this.requirement["mws"];
 		var localYomi = this.requirement["yomi"];
 		var localYomiPrice = this.price["yomi"];
+		var localHonor = this.requirement["honor"];
+		var localHonorPrice = this.price["honor"];
+		var localProjects = this.requirement["projects"];
 		this.obj.trigger = () => {
-		    return  sufficient(operations,      localOperations) 
-		        &&  sufficient(trust,           localTrust)
-		        &&  sufficient(clipmakerLevel,  localClipmakerLevel)
-		        &&  sufficient(storedPower,     localMWs)
-		        &&  sufficient(yomi,            localYomi);
+		    return  sufficient(operations,      localOperations			) 
+		        &&  sufficient(trust,           localTrust				)
+		        &&  sufficient(clipmakerLevel,  localClipmakerLevel		)
+		        &&  sufficient(storedPower,     localMWs				)
+		        &&  sufficient(yomi,            localYomi				)
+				&& 	sufficient(honor,			localHonor				)
+				&& 	(Array.isArray(localProjects) ? !localProjects.filter(e => !isPurchasedVanilla(e)).length : true); 
 		};
 		this.obj.uses = this.uses;
 		this.obj.cost = () => {
@@ -68,7 +77,8 @@ class Project {
 		        &&  sufficient(trust,           localTrustPrice         )
 		        &&  sufficient(clipmakerLevel,  localClipmakerLevelPrice)
 		        &&  sufficient(storedPower,     localMWsPrice           )
-		        &&  sufficient(yomi,            localYomiPrice          );
+		        &&  sufficient(yomi,            localYomiPrice          )
+				&& 	sufficient(honor,			localHonorPrice			);
 		};
 		this.obj.flag = +moddedPurchased.includes(this.obj.id);
 		this.obj.effect = () => {
@@ -86,8 +96,60 @@ class Project {
 			moddedPurchased.push(this.obj.id);
 		}
 		if(!this.obj.flag) projects.push(this.obj);
+		moddedProjects[this.modid] = moddedProjects[this.modid] == undefined ? {} : moddedProjects[this.modid];
+		moddedProjects[this.modid][this.pid] = {
+			"class": this,
+			"obj": this.obj
+		};
 		return this;
 	}	
+}
+class Strategy {
+	constructor(name, moveFunction, moveDescription, pid, modid) { // moveFunction returns 1 for left, 2 for right
+		this.name = name;
+		this.moveFunction = moveFunction; 
+		this.desc = moveDescription;
+		this.pid = pid;
+		this.modid = modid;
+	}
+	setup() {
+		allStrats.push({
+			active: 0,
+			currentPos: 1,
+			currentScore: 0,
+			name: this.name,
+			pickMove: this.moveFunction
+		});
+	}
+	toProject(requiredOps, requiredProjects=["projectButton20"]) {
+		let nameLocal = this.name;
+		let moveFunctionLocal = this.moveFunction;
+		this.setup();
+		return new Project(
+			"New Strategy: "+this.name,
+			this.desc,
+			this.pid,
+			{operations: requiredOps},
+			{operations: Math.max(0,requiredOps-5000), projects: requiredProjects},
+			this.name+" added to strategy pool",
+			() => {
+				let len = strats.length;
+				strats.push({
+					active: 1,
+					currentPos: 1,
+					currentScore: 0,
+					name: nameLocal,
+					pickMove: moveFunctionLocal
+				})
+				var stratList = document.getElementById("stratPicker");
+				var el = document.createElement("option");
+				el.textContent = nameLocal;
+				el.value = len;
+				stratList.appendChild(el);
+			},
+			this.modid
+		);
+	}
 }
 window.onload = () => {
 	clipInit();
