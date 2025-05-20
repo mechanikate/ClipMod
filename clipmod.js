@@ -3,18 +3,17 @@
  * This is an on-and-off hobby project by mechanikate. Don't expect frequent updates because I get distracted.
  * Your most useful resource, as of now, will be exampleMod.js 
  */
-var clipHooks = [];
-var moddedPurchased = [];
-var moddedProjects = {}; // stores all of the projects made by ClipMod mods
-clipHooks.push(() => {
-	console.log("ClipMod enabled.");
-});
-
+const clipmodVersion = "v1.0.0"; // version of ClipMod!
+let clipHooks = []; // functions to run on window load
+let moddedPurchased = []; // all purchased project *ids* go here!
+let moddedProjects = {}; // stores all of the projects made by ClipMod mods
+let installedModids = ["clipmod"]; // base library is all it starts with
 const clipInit = () => {
-    console.log("(ClipMod) Loading hooks...")
+    console.log("(ClipMod) Loading hooks...");
     clipHooks.forEach(hook => hook()); // run each hook on init
     console.log("(ClipMod) Hooks done."); // alert the user we're all ready
-}
+};
+const addCommas = num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); // formats numbers (e.g. from 2500000.32 --> 2,500,000.32)from https://stackoverflow.com/a/2901298
 const isPurchased = (modid, pid) => !!moddedProjects[modid][pid].obj.flag; // is this project purchased? we have to use !! here because the flag value is 0 or 1, not false or true
 const isPurchasedVanilla = id => !!(setIfBlank(projects.filter(idToCompare => id == idToCompare.id), [{flag: 0}])[0].flag);
 const sufficient = (balance, price) => (typeof price === "number" && typeof balance === "number") ? balance>=price : true; // if any of price or balance aren't a number, return true as they aren't a requirement. otherwise, compare the prices and return if the player has enough
@@ -32,23 +31,24 @@ class Project {
 		this.todo = todo;
 		this.modid = modid;
 		this.obj = {};
-		
+		if(!installedModids.includes(this.modid)) installedModids.push(this.modid);
 	}
-	priceTag() {
+	priceTag() { // add all the price strings to a list, then join with commas and surround with parantheses
 		let result = [];
-		if(typeof this.price["operations"] === "number") result.push(`${this.price["operations"]} ops`);
-		if(typeof this.price["trust"] === "number") result.push(`${this.price["trust"]} trust`);
-		if(typeof this.price["mws"] === "number") result.push(`${this.price["mws"]} MW-seconds`);
-		if(typeof this.price["yomi"] === "number") result.push(`${this.price["yomi"]} yomi`);
-		if(typeof this.price["honor"] === "number") result.push(`${this.price["honor"]} honor`);
+		if(typeof this.price["operations"] === "number") result.push(`${addCommas(this.price["operations"])} ops`);
+		if(typeof this.price["trust"] === "number") result.push(`${addCommas(this.price["trust"])} trust`);
+		if(typeof this.price["mws"] === "number") result.push(`${addCommas(this.price["mws"])} MW-seconds`);
+		if(typeof this.price["yomi"] === "number") result.push(`${addCommas(this.price["yomi"])} yomi`);
+		if(typeof this.price["honor"] === "number") result.push(`${addCommas(this.price["honor"])} honor`);
 		if(!result.length) return "";
 		return `(${result.join(", ")})`;
 	}
 	setup() {
-		this.obj.id = this.modid+"Button"+this.pid;
-		this.obj.title = this.name+" ";
-		this.obj.priceTag = this.priceTag();
-		this.obj.description = this.description;
+		this.obj.id = this.modid+"Button"+this.pid; // somewhat similar to base game naming scheme, what is the element ID for the project? in the base game, this is projectButton___, where the underscores are just an integer
+		this.obj.title = this.name+" "; // all of the base game titles have a space at the end, so why not keep the consistency and do it here? 
+		this.obj.priceTag = this.priceTag(); // price tag next to the title (e.g. "(10,000 ops, 10 trust, 5,000 MW-seconds)", etc.)
+		this.obj.description = this.description; // text below the title and price tag to describe what this does
+ 		// self-explanatory, eventually all of these shouldn't need variable names for things starting local but I don't feel like changing this for now
 		var localOperations = this.requirement["operations"];
 		var localOperationsPrice = this.price["operations"];
 		var localTrust = this.requirement["trust"];
@@ -62,7 +62,7 @@ class Project {
 		var localHonor = this.requirement["honor"];
 		var localHonorPrice = this.price["honor"];
 		var localProjects = this.requirement["projects"];
-		this.obj.trigger = () => {
+		this.obj.trigger = () => { // if this returns true, show the project in the purchasables list. different from "cost" which is what you actually need to buy it, this is just when to show it
 		    return  sufficient(operations,      localOperations			) 
 		        &&  sufficient(trust,           localTrust				)
 		        &&  sufficient(clipmakerLevel,  localClipmakerLevel		)
@@ -72,7 +72,7 @@ class Project {
 				&& 	(Array.isArray(localProjects) ? !localProjects.filter(e => !isPurchasedVanilla(e)).length : true); 
 		};
 		this.obj.uses = this.uses;
-		this.obj.cost = () => {
+		this.obj.cost = () => { // can we buy this thing?
 	        return  sufficient(operations,      localOperationsPrice    ) 
 		        &&  sufficient(trust,           localTrustPrice         )
 		        &&  sufficient(clipmakerLevel,  localClipmakerLevelPrice)
@@ -80,32 +80,36 @@ class Project {
 		        &&  sufficient(yomi,            localYomiPrice          )
 				&& 	sufficient(honor,			localHonorPrice			);
 		};
-		this.obj.flag = +moddedPurchased.includes(this.obj.id);
-		this.obj.effect = () => {
+		this.obj.flag = +moddedPurchased.includes(this.obj.id); // unary plus (+moddedPurch...) converts true/false to 0/1 respectively. otherwise, this just gets if we've already bought this and returns 1 if so to make sure we don't show it for purchase multiple times
+		this.obj.effect = () => { // on purchase events
 			this.obj.flag = 1;
 			displayMessage(this.display);
 			this.todo();
-			standardOps -= clampIfNaN(this.price["operations"]);
-			trust -= clampIfNaN(this.price["trust"]);
-			yomi -= clampIfNaN(this.price["yomi"]);
-			storedPower -= clampIfNaN(this.price["mws"]*1e6); // convert MWs to Ws as the game uses
-			var element = document.getElementById(this.obj.id);
+			standardOps -= clampIfNaN(this.price["operations"]); // spend ops
+			trust -= clampIfNaN(this.price["trust"]); // spend trust
+			yomi -= clampIfNaN(this.price["yomi"]); // spend yomi
+			storedPower -= clampIfNaN(this.price["mws"]*1e6); // spend MWs, convert MWs to Ws as the game uses
+			var element = document.getElementById(this.obj.id); // shenanigans from base game, basically just removes the project from the project list
 			element.parentNode.removeChild(element);
 			var index = activeProjects.indexOf(this.obj);
 			activeProjects.splice(index, 1);
-			moddedPurchased.push(this.obj.id);
+			moddedPurchased.push(this.obj.id); // locally add our project's id to the moddedPurchased list to make sure it doesn't accidentally show up in available projects again
 		}
-		if(!this.obj.flag) projects.push(this.obj);
-		moddedProjects[this.modid] = moddedProjects[this.modid] == undefined ? {} : moddedProjects[this.modid];
-		moddedProjects[this.modid][this.pid] = {
-			"class": this,
-			"obj": this.obj
+		if(!this.obj.flag) projects.push(this.obj); // add our project to the master list of projects if it hasn't already been bought
+		moddedProjects[this.modid] = moddedProjects[this.modid] == undefined ? {} : moddedProjects[this.modid]; // validation to make sure moddedProjects[this.modid] isn't blank, this just fixes that case
+		moddedProjects[this.modid][this.pid] = { // add to our list of moddedProjects for referencing for debugging and other shenanigans
+			"class": this, // actual reference to class
+			"obj": this.obj // internal format of projects (dictionary)
 		};
-		return this;
+		return this; // return back this class for further work/chaining
 	}	
 }
-class Strategy {
-	constructor(name, moveFunction, moveDescription, pid, modid) { // moveFunction returns 1 for left, 2 for right
+class Strategy { // implementing custom Strategic Modeling strats
+	constructor(name, // name of the strategy, usually all caps (e.g. TIT FOR TAT)
+				moveFunction, // should only ever return 1 (for left/top) or 2 (for bottom/right)
+				moveDescription, // how does this strat work in layman's terms? it's okay to simplify as per the base game's descriptions
+				pid, // same rules as Project pid and shares the need for separate pids with Project
+				modid) { // the name of the mod adding this strat
 		this.name = name;
 		this.moveFunction = moveFunction; 
 		this.desc = moveDescription;
@@ -124,11 +128,12 @@ class Strategy {
 		});
 	}
 	toProject(requiredOps, requiredProjects=["projectButton20"]) {
+		let _this = this; // "this" breaks here so we make a different variable equal to the class' this attribute named _this
 		let nameLocal = this.name;
 		let moveFunctionLocal = this.moveFunction;
 		this.setup();
 		return new Project(
-			"New Strategy: "+this.name,
+			"New Strategy: "+this.name, // base format by vanilla game
 			this.desc,
 			this.pid,
 			{operations: requiredOps},
@@ -137,15 +142,15 @@ class Strategy {
 			() => {
 				let len = strats.length;
 				strats.push({
-					active: 1,
-					currentPos: 1,
-					currentScore: 0,
-					name: nameLocal,
-					pickMove: () => moveFunctionLocal(strats[len].currentPos)
-				})
-				var stratList = document.getElementById("stratPicker");
+					active: 1, // add the strat as active to the list of strats
+					currentPos: 1, // default in vanilla
+					currentScore: 0, // default in vanilla
+					name: _this.name,
+					pickMove: () => _this.moveFunction(strats[len].currentPos) // usually currentPos is under this (e.g. this.currentPos in the move functions in base game) but this doesn't work in our case so we pass it via a parameter
+				});
+				var stratList = document.getElementById("stratPicker"); // add the strat to the pick strat dropdown
 				var el = document.createElement("option");
-				el.textContent = nameLocal;
+				el.textContent = _this.name;
 				el.value = len;
 				stratList.appendChild(el);
 			},
@@ -154,5 +159,10 @@ class Strategy {
 	}
 }
 window.onload = () => {
-	clipInit();
-}
+	clipHooks.push(() => { // Log that ClipMod is done loading here
+		console.log("ClipMod enabled.");
+	});
+	clipInit(); // Run all the hooks
+	displayMessage(`ClipMod enabled (${clipmodVersion})`) // Display a message in the game "console" that ClipMod is all ready
+	displayMessage(`Installed mods: ${installedModids.join(", ")}`);
+};
