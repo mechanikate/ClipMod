@@ -8,6 +8,12 @@ let clipHooks = []; // functions to run on window load
 let moddedPurchased = []; // all purchased project *ids* go here!
 let moddedProjects = {}; // stores all of the projects made by ClipMod mods
 let installedModids = ["clipmod"]; // base library is all it starts with
+let boughtStrats = [];
+let saveHooks = [
+	() => {
+		
+	}
+];
 const clipInit = () => {
     console.log("(ClipMod) Loading hooks...");
     clipHooks.forEach(hook => hook()); // run each hook on init
@@ -63,6 +69,7 @@ class Project {
 		var localHonorPrice = this.price["honor"];
 		var localProjects = this.requirement["projects"];
 		this.obj.trigger = () => { // if this returns true, show the project in the purchasables list. different from "cost" which is what you actually need to buy it, this is just when to show it
+			if(this.obj.flag) false;
 		    return  sufficient(operations,      localOperations			) 
 		        &&  sufficient(trust,           localTrust				)
 		        &&  sufficient(clipmakerLevel,  localClipmakerLevel		)
@@ -94,6 +101,7 @@ class Project {
 			var index = activeProjects.indexOf(this.obj);
 			activeProjects.splice(index, 1);
 			moddedPurchased.push(this.obj.id); // locally add our project's id to the moddedPurchased list to make sure it doesn't accidentally show up in available projects again
+			
 		}
 		if(!this.obj.flag) projects.push(this.obj); // add our project to the master list of projects if it hasn't already been bought
 		moddedProjects[this.modid] = moddedProjects[this.modid] == undefined ? {} : moddedProjects[this.modid]; // validation to make sure moddedProjects[this.modid] isn't blank, this just fixes that case
@@ -124,7 +132,32 @@ class Strategy { // implementing custom Strategic Modeling strats
 			currentPos: 1,
 			currentScore: 0,
 			name: this.name,
-			pickMove: () => _this.moveFunction(strats[len].currentPos)
+			pickMove: () => _this.moveFunction(strats[len].currentPos),
+			modid: _this.modid,
+			pid: _this.pid
+		});
+		if(boughtStrats.filter(e => e.modid == _this.modid && e.pid == _this.pid).length > 0) this.addStrat(); // add the strat if it's already bought
+	}
+	addStrat() {
+		let _this = this;
+		let len = strats.length;
+		strats.push({
+			active: 1, // add the strat as active to the list of strats
+			currentPos: 1, // default in vanilla
+			currentScore: 0, // default in vanilla
+			name: _this.name,
+			pickMove: () => _this.moveFunction(strats[len].currentPos), // usually currentPos is under this (e.g. this.currentPos in the move functions in base game) but this doesn't work in our case so we pass it via a parameter
+			modid: _this.modid,
+			pid: _this.pid
+		});
+		var stratList = document.getElementById("stratPicker"); // add the strat to the pick strat dropdown
+		var el = document.createElement("option");
+		el.textContent = this.name;
+		el.value = len;
+		stratList.appendChild(el);
+		if(boughtStrats.filter(e => e.modid == _this.modid && e.pid == _this.pid).length == 0) boughtStrats.push({
+			modid: _this.modid,
+			pid: _this.pid
 		});
 	}
 	toProject(requiredOps, requiredProjects=["projectButton20"]) {
@@ -139,21 +172,7 @@ class Strategy { // implementing custom Strategic Modeling strats
 			{operations: requiredOps},
 			{operations: Math.max(0,requiredOps-5000), projects: requiredProjects},
 			this.name+" added to strategy pool",
-			() => {
-				let len = strats.length;
-				strats.push({
-					active: 1, // add the strat as active to the list of strats
-					currentPos: 1, // default in vanilla
-					currentScore: 0, // default in vanilla
-					name: _this.name,
-					pickMove: () => _this.moveFunction(strats[len].currentPos) // usually currentPos is under this (e.g. this.currentPos in the move functions in base game) but this doesn't work in our case so we pass it via a parameter
-				});
-				var stratList = document.getElementById("stratPicker"); // add the strat to the pick strat dropdown
-				var el = document.createElement("option");
-				el.textContent = _this.name;
-				el.value = len;
-				stratList.appendChild(el);
-			},
+			this.addStrat,
 			this.modid
 		);
 	}
