@@ -24,9 +24,9 @@ const isPurchased = (modid, pid) => !!moddedProjects[modid][pid].obj.flag; // is
 const isPurchasedVanilla = id => !!(setIfBlank(projects.filter(idToCompare => id == idToCompare.id), [{flag: 0}])[0].flag);
 const sufficient = (balance, price) => (typeof price === "number" && typeof balance === "number") ? balance>=price : true; // if any of price or balance aren't a number, return true as they aren't a requirement. otherwise, compare the prices and return if the player has enough
 const clampIfNaN = x => typeof x === "number" ? x : 0; // if it is a number, keep. if it isn't a number, set to 0.
-const setIfBlank = (val, defaulting) => val == undefined || (Array.isArray(val) && val.length == 0) ? defaulting : val;
+const setIfBlank = (val, defaulting) => (val == undefined || (Array.isArray(val) && val.length == 0) || (typeof val === "number" && isNaN(val)) || val == null) ? defaulting : val;
 class Project {
-	constructor(name, description, pid, price, requirement, display, todo, modid) {
+	constructor(name, description, pid, price, requirement, display, todo, modid, isStrat=false, stratOnlyParams=null) {
 		this.name = name;
 		this.description = description;
 		this.pid = pid;
@@ -36,8 +36,10 @@ class Project {
 		this.uses = 1;
 		this.todo = todo;
 		this.modid = modid;
+		this.isStrat = isStrat;
 		this.obj = {};
 		if(!installedModids.includes(this.modid)) installedModids.push(this.modid);
+		if(this.isStrat) this.stratOnlyParams = stratOnlyParams;
 	}
 	priceTag() { // add all the price strings to a list, then join with commas and surround with parantheses
 		let result = [];
@@ -46,6 +48,7 @@ class Project {
 		if(typeof this.price["mws"] === "number") result.push(`${addCommas(this.price["mws"])} MW-seconds`);
 		if(typeof this.price["yomi"] === "number") result.push(`${addCommas(this.price["yomi"])} yomi`);
 		if(typeof this.price["honor"] === "number") result.push(`${addCommas(this.price["honor"])} honor`);
+		if(typeof setIfBlank(this.price["custom"], {description: null}).description === "string") result.push(this.price["custom"].description);
 		if(!result.length) return "";
 		return `(${result.join(", ")})`;
 	}
@@ -68,6 +71,8 @@ class Project {
 		var localHonor = this.requirement["honor"];
 		var localHonorPrice = this.price["honor"];
 		var localProjects = this.requirement["projects"];
+		var localCustom = this.requirement["custom"];
+		var localCustomPrice = this.price["custom"];
 		this.obj.trigger = () => { // if this returns true, show the project in the purchasables list. different from "cost" which is what you actually need to buy it, this is just when to show it
 			if(this.obj.flag) false;
 		    return  sufficient(operations,      localOperations			) 
@@ -76,7 +81,8 @@ class Project {
 		        &&  sufficient(storedPower,     localMWs				)
 		        &&  sufficient(yomi,            localYomi				)
 				&& 	sufficient(honor,			localHonor				)
-				&& 	(Array.isArray(localProjects) ? !localProjects.filter(e => !isPurchasedVanilla(e)).length : true); 
+				&& 	(Array.isArray(localProjects) ? !localProjects.filter(e => !isPurchasedVanilla(e)).length : true)
+				&&  setIfBlank(localCustom,		{f:()=>true}			).f();
 		};
 		this.obj.uses = this.uses;
 		this.obj.cost = () => { // can we buy this thing?
@@ -85,13 +91,14 @@ class Project {
 		        &&  sufficient(clipmakerLevel,  localClipmakerLevelPrice)
 		        &&  sufficient(storedPower,     localMWsPrice           )
 		        &&  sufficient(yomi,            localYomiPrice          )
-				&& 	sufficient(honor,			localHonorPrice			);
+				&& 	sufficient(honor,			localHonorPrice			)
+				&& 	setIfBlank(localCustomPrice,{f:()=>true}			).f();
 		};
 		this.obj.flag = +moddedPurchased.includes(this.obj.id); // unary plus (+moddedPurch...) converts true/false to 0/1 respectively. otherwise, this just gets if we've already bought this and returns 1 if so to make sure we don't show it for purchase multiple times
 		this.obj.effect = () => { // on purchase events
 			this.obj.flag = 1;
 			displayMessage(this.display);
-			this.todo();
+			this.todo(this.isStrat ? this.stratOnlyParams : this);
 			standardOps -= clampIfNaN(this.price["operations"]); // spend ops
 			trust -= clampIfNaN(this.price["trust"]); // spend trust
 			yomi -= clampIfNaN(this.price["yomi"]); // spend yomi
@@ -101,8 +108,7 @@ class Project {
 			var index = activeProjects.indexOf(this.obj);
 			activeProjects.splice(index, 1);
 			moddedPurchased.push(this.obj.id); // locally add our project's id to the moddedPurchased list to make sure it doesn't accidentally show up in available projects again
-			
-		}
+		};
 		if(!this.obj.flag) projects.push(this.obj); // add our project to the master list of projects if it hasn't already been bought
 		moddedProjects[this.modid] = moddedProjects[this.modid] == undefined ? {} : moddedProjects[this.modid]; // validation to make sure moddedProjects[this.modid] isn't blank, this just fixes that case
 		moddedProjects[this.modid][this.pid] = { // add to our list of moddedProjects for referencing for debugging and other shenanigans
@@ -131,15 +137,14 @@ class Strategy { // implementing custom Strategic Modeling strats
 			active: 0,
 			currentPos: 1,
 			currentScore: 0,
-			name: this.name,
+			name: _this.name,
 			pickMove: () => _this.moveFunction(strats[len].currentPos),
 			modid: _this.modid,
 			pid: _this.pid
 		});
 		if(boughtStrats.filter(e => e.modid == _this.modid && e.pid == _this.pid).length > 0) this.addStrat(); // add the strat if it's already bought
 	}
-	addStrat() {
-		let _this = this;
+	addStrat(_this=this) {
 		let len = strats.length;
 		strats.push({
 			active: 1, // add the strat as active to the list of strats
@@ -152,7 +157,7 @@ class Strategy { // implementing custom Strategic Modeling strats
 		});
 		var stratList = document.getElementById("stratPicker"); // add the strat to the pick strat dropdown
 		var el = document.createElement("option");
-		el.textContent = this.name;
+		el.textContent = _this.name;
 		el.value = len;
 		stratList.appendChild(el);
 		if(boughtStrats.filter(e => e.modid == _this.modid && e.pid == _this.pid).length == 0) boughtStrats.push({
@@ -162,18 +167,18 @@ class Strategy { // implementing custom Strategic Modeling strats
 	}
 	toProject(requiredOps, requiredProjects=["projectButton20"]) {
 		let _this = this; // "this" breaks here so we make a different variable equal to the class' this attribute named _this
-		let nameLocal = this.name;
-		let moveFunctionLocal = this.moveFunction;
 		this.setup();
 		return new Project(
-			"New Strategy: "+this.name, // base format by vanilla game
+			"New Strategy: "+_this.name, // base format by vanilla game
 			this.desc,
 			this.pid,
 			{operations: requiredOps},
 			{operations: Math.max(0,requiredOps-5000), projects: requiredProjects},
 			this.name+" added to strategy pool",
 			this.addStrat,
-			this.modid
+			this.modid,
+			true,
+			_this
 		);
 	}
 }

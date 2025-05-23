@@ -14,7 +14,28 @@ clipHooks.push(() => {
 			},
 			"obsceneMod" // what mod does this project belong to?
 		)
-		.setup() // add this project to the list contenders
+		.setup(), // add this project to the list contenders
+		new Project( // this project resets the game if your available matter is at 0 and if purchased
+			"Temporal Nullification", 
+			"Bring the universe back to the start of your playthrough",
+			3,
+			{
+				operations:10000,
+				custom:{
+					description:"no available matter left", 
+					f:() => availableMatter == 0
+				}
+			},
+			{
+				custom:{
+					f:() => availableMatter <= 1e15
+				}
+			},
+			"Resetting...",
+			reset,
+			"obsceneMod"
+		)
+		.setup()
 	); // push this to a local variable for debugging
 	new Strategy("ENIGMA", (a)=>{
 		const biggestPayoff = findBiggestPayoff();
