@@ -15,75 +15,46 @@ clipHooks.push(() => {
 			"obsceneMod" // what mod does this project belong to?
 		)
 		.setup(), // add this project to the list contenders
-		new Project( // this project resets the game if your available matter is at 0 and if purchased
+		new Project( // this project resets the game if your available matter is at 0 and if you have 10k ops
 			"Temporal Nullification", 
 			"Bring the universe back to the start of your playthrough",
 			3,
 			{
 				operations:10000,
 				custom:{
-					description:"no available matter left", 
-					f:() => availableMatter == 0
+					description:"no available matter left", // label to add to the price tag, so the title will appear as: "Temporal Nullification (10,000 ops, no available matter left)"
+					f:() => availableMatter == 0 // is the available matter at exactly 0? if so, allow them to buy (if they also have 10k ops)
 				}
 			},
 			{
 				custom:{
-					f:() => availableMatter <= 1e15
+					f:() => availableMatter <= 1e15 // is the available matter less than 1 quintillion grams (1e+15 g)? return true if so, adding it to the list. otherwise, return false and don't show to the player yet
 				}
 			},
-			"Resetting...",
-			reset,
-			"obsceneMod"
+			"Resetting...", // display "Resetting..." in the display terminal
+			reset, // this is the base game function to reset your save 
+			"obsceneMod" // mod ID
 		)
 		.setup()
 	); // push this to a local variable for debugging
-	new Strategy("ENIGMA", (a)=>{
-		const biggestPayoff = findBiggestPayoff();
-		const greedyFactor = Math.random() >= 0.1; // will we be greedy?
-		if(biggestPayoff == 1 || biggestPayoff == 3) return greedyFactor ? 1 : 2;
-		return greedyFactor ? 2 : 1;
-	}, "Be GREEDY 90% of the time and GENEROUS the other 10%", 2, "obsceneMod").toProject(5000, ["projectButton60"]).setup();
+	new Strategy(
+		"ENIGMA", // name of the strategy
+		(a)=>{ // function that determines which option to pick (cooperate or defect)
+			const biggestPayoff = findBiggestPayoff(); // base function from GREEDY to find the biggest payoff option
+			const greedyFactor = Math.random() >= 0.1; // will we be greedy?
+			if(biggestPayoff == 1 || biggestPayoff == 3) return greedyFactor ? 1 : 2; // GENEROUS is the polar oppposite of GREEDY, so we can just use a ternary operator to swap between them, combined with the base logic from the GREEDY strat for the rest of this function
+			return greedyFactor ? 2 : 1;
+		}, 
+		"Be GREEDY 90% of the time and GENEROUS the other 10%", // description for the project (if you make one, which you should)
+		2, // project ID, SHARED WITH PROJECTS! thus you can't have a project with pid=2 and a strat with pid=2. this will cause issues
+		"obsceneMod" // mod ID
+	)
+	.toProject( // convert this to a project to enable buying the strat
+		5000, // ops required to buy
+		[ // list of dependencies in "projects" ID array that must be bought before this
+			"projectButton60" // this is the ID for "New Strategy: A100"
+		]
+	)
+	.setup(); // add the project and set up the strategy in the allStrats array
 }); // push into the hooks
-// Cheating functions for testing from base game, ignore:
-function cheatClips() {
-    clips = clips + 100000000;
-    unusedClips = unusedClips + 100000000;
-    displayMessage("you just cheated");
-}
 
-function cheatMoney() {
-    funds = funds + 10000000;
-    document.getElementById("funds").innerHTML = funds.toFixed(2);
-    displayMessage("LIZA just cheated");
-}
-
-function cheatTrust() {
-    trust = trust+1;
-    displayMessage("Hilary is nice. Also, Liza just cheated");
-}
-
-function cheatOps() {
-    standardOps = standardOps + 10000;
-    displayMessage("you just cheated, Liza");
-}
-
-function cheatCreat() {
-    creativityOn = 1;
-    creativity = creativity + 1000;
-    displayMessage("Liza just cheated. Very creative!");
-}
-
-function cheatYomi() {
-    yomi = yomi + 1000000;
-    document.getElementById("yomiDisplay").innerHTML = yomi.toLocaleString();
-    displayMessage("you just cheated");
-    }
-
-function cheatHypno() {
-    hypnoDroneEvent();
-}
-
-function zeroMatter() {
-    availableMatter = 0;
-    displayMessage("you just cheated");
-}
