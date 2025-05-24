@@ -3,7 +3,7 @@
  * This is an on-and-off hobby project by mechanikate. Don't expect frequent updates because I get distracted.
  * Your most useful resource, as of now, will be exampleMod.js 
  */
-const clipmodVersion = "v1.0.0"; // version of ClipMod!
+const clipmodVersion = "v1.1.0"; // version of ClipMod!
 let clipHooks = []; // functions to run on window load
 let moddedPurchased = []; // all purchased project *ids* go here!
 let moddedProjects = {}; // stores all of the projects made by ClipMod mods
@@ -25,6 +25,31 @@ const isPurchasedVanilla = id => !!(setIfBlank(projects.filter(idToCompare => id
 const sufficient = (balance, price) => (typeof price === "number" && typeof balance === "number") ? balance>=price : true; // if any of price or balance aren't a number, return true as they aren't a requirement. otherwise, compare the prices and return if the player has enough
 const clampIfNaN = x => typeof x === "number" ? x : 0; // if it is a number, keep. if it isn't a number, set to 0.
 const setIfBlank = (val, defaulting) => (val == undefined || (Array.isArray(val) && val.length == 0) || (typeof val === "number" && isNaN(val)) || val == null) ? defaulting : val;
+class Mod {
+	constructor(modid) {
+		this.modid = modid;
+		this.basePid = 1;
+		this.hooks = [];
+		this.projects = [];
+		this.strats = [];
+	}
+	addProject(name, description, price, requirement, display, todo) {
+		let ourProject = new Project(name, description, this.basePid, price, requirement, display, todo, this.modid);
+		this.projects.push(ourProject);
+		clipHooks.push(() => ourProject.setup());
+		this.basePid++;
+		return this;
+	}
+	addStrategy(name, moveFunction, moveDescription, price, requirement) {
+		let ourStrat = new Strategy(name, moveFunction, moveDescription, this.basePid, this.modid);
+		let ourProject = ourStrat.toProject(requirement, price);
+		this.strats.push(ourStrat);
+		this.projects.push(ourProject);
+		clipHooks.push(() => ourProject.setup());
+		this.basePid++;
+		return this;
+	}
+}
 class Project {
 	constructor(name, description, pid, price, requirement, display, todo, modid, isStrat=false, stratOnlyParams=null) {
 		this.name = name;
@@ -165,15 +190,15 @@ class Strategy { // implementing custom Strategic Modeling strats
 			pid: _this.pid
 		});
 	}
-	toProject(requiredOps, requiredProjects=["projectButton20"]) {
+	toProject(price, requirements) {
 		let _this = this; // "this" breaks here so we make a different variable equal to the class' this attribute named _this
 		this.setup();
 		return new Project(
 			"New Strategy: "+_this.name, // base format by vanilla game
 			this.desc,
 			this.pid,
-			{operations: requiredOps},
-			{operations: Math.max(0,requiredOps-5000), projects: requiredProjects},
+			requirements,
+			price,
 			this.name+" added to strategy pool",
 			this.addStrat,
 			this.modid,
