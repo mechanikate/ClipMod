@@ -9,11 +9,6 @@ let moddedPurchased = []; // all purchased project *ids* go here!
 let moddedProjects = {}; // stores all of the projects made by ClipMod mods
 let installedModids = ["clipmod"]; // base library is all it starts with
 let boughtStrats = [];
-let saveHooks = [
-	() => {
-		
-	}
-];
 const clipInit = () => {
     console.log("(ClipMod) Loading hooks...");
     clipHooks.forEach(hook => hook()); // run each hook on init
