@@ -114,7 +114,7 @@ class Project {
 				&& 	sufficient(honor,			localHonorPrice			)
 				&& 	setIfBlank(localCustomPrice,{f:()=>true}			).f();
 		};
-		this.obj.flag = +moddedPurchased.includes(this.obj.id); // unary plus (+moddedPurch...) converts true/false to 0/1 respectively. otherwise, this just gets if we've already bought this and returns 1 if so to make sure we don't show it for purchase multiple times
+		this.obj.flag = +moddedPurchased.includes(this.obj.id); // unary plus (+moddedPurch...) converts true/false to 1/0 respectively. otherwise, this just gets if we've already bought this and returns 1 if so to make sure we don't show it for purchase multiple times
 		this.obj.effect = () => { // on purchase events
 			this.obj.flag = 1;
 			displayMessage(this.display);
