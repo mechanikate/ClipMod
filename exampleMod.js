@@ -1,6 +1,4 @@
-const projectListLocal = []; // debugging var to make sure the generated obj object is correct
 const myMod = new Mod("exampleMod");
-
 myMod.addProject(
 	"AutoClipper Shenanigans", // project name
 	"Adds 500 clippers and gives you 2,000 yomi", // project description
