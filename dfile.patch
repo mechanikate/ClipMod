@@ -1,17 +1,176 @@
-Only in ./: .git
-Only in ./: .gitignore
-Only in ./: Makefile
-Only in ./: README.md
 Only in ./: apply.sh
 Only in ./: clipmod.js
 Only in ./: clipmod.png
 Only in ./: dfile.patch
-Only in ./: dfile.patch.1
 Only in ./: exampleMod.js
-Only in ./: gitignore
+Only in ./: .git
+Only in ./: .gitignore
+diff -crB original/index2.html ./index2.html
+*** original/index2.html	2018-02-03 17:00:23.000000000 -0500
+--- ./index2.html	2025-07-12 14:24:51.671640282 -0400
+***************
+*** 1,17 ****
+! <html>
+      <head>
+!         <meta name="viewport" content="width=device-width, initial-scale=1">
+!         <link rel="stylesheet" type="text/css" href="interface.css?v2" />
+!         <!-- Global Site Tag (gtag.js) - Google Analytics -->
+!         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-107491380-1"></script>
+!         <script>
+!             window.dataLayer = window.dataLayer || [];
+!             function gtag(){dataLayer.push(arguments)};
+!             gtag('js', new Date());
+!             gtag('config', 'UA-107491380-1');
+!             gtag('set', {'user_id': 'USER_ID'}); // Set the user ID using signed-in user_id.
+!         </script>
+! 
+      </head>
+      
+      <body>
+--- 1,6 ----
+! <html
+      <head>
+!         <link rel="stylesheet" type="text/css" href="interface.css" />
+      </head>
+      
+      <body>
+***************
+*** 20,46 ****
+          <source src="test.mp3" type="audio/mpeg">
+          
+      </audio>   -->  
+- 
+-     <div id="mobile">
+-         <div id="mobile-content">
+-             <div id="mobile-title">
+-                 <img src="mobile-title.png">
+-             </div>
+-             <div id="mobile-main-text">
+-                 The web version of this game was<br /> 
+-                 not designed to work on phones.<br />
+-                 Grab the mobile version below.
+-             </div>
+-             <div id="mobile-badges">
+-                 <a href="https://itunes.apple.com/us/app/universal-paperclips/id1300634274?ls=1&mt=8"><img src="apple_badge.svg" id="apple_badge"></a>
+-                 <a href="https://play.google.com/store/apps/details?id=com.everybodyhouse.paperclipsuniquetest"><img src="google_badge.svg" id="google_badge"></a>
+-             </div>
+-         </div> <!-- END mobile-content -->
+-         
+-     </div> <!-- END mobile -->
+          
+      <div id="page">
+!         
+      <div id="cover">
+      </div>    
+          
+--- 9,19 ----
+          <source src="test.mp3" type="audio/mpeg">
+          
+      </audio>   -->  
+          
+      <div id="page">
+!     <div>
+! 
+! 		
+      <div id="cover">
+      </div>    
+          
+***************
+*** 49,62 ****
+          </div>
+          
+          <div id="consoleDiv">
+-             
+-             <div id="giftShopDiv" class = "shop">
+-                 
+-                 Mobile Version: <a href = "https://t.co/t7YJKgiQpr" target = "_blank">iPhone</a> / <a href = "https://t.co/vtIAcdIYEj" target = "_blank">Android</a><br />    
+-                 
+-                 T-Shirts: <a href = "https://teespring.com/stores/universal-paperclips" target="_blank" >Gift Shop</a> 
+-                 
+-             </div>
+  
+              <p class = "consoleOld"> 
+                  <span>&nbsp;.&nbsp;</span><span id="readout5"></span><br />
+--- 22,27 ----
+***************
+*** 323,338 ****
+          onclick="makeMegaClipper()">MegaClippers</button> <span class = "engineText6" id="megaClipperLevel">0</span></p>
+          Cost: $ <span id="megaClipperCost">500</span><br />
+          </div>    
+!                   
+          </div>
+  
+!         <br />
+! 
+!            
+! <!--
+! 
+! 
+!         <button id ="save1Button" onclick="save1()">SAVE SLOT 1</button>
+          <button id ="load1Button" onclick="load1()">LOAD SLOT 1</button><br /> 
+          <button id ="save2Button" onclick="save2()">SAVE SLOT 2</button>
+          <button id ="load2Button" onclick="load2()">LOAD SLOT 2</button><br />    
+--- 288,298 ----
+          onclick="makeMegaClipper()">MegaClippers</button> <span class = "engineText6" id="megaClipperLevel">0</span></p>
+          Cost: $ <span id="megaClipperCost">500</span><br />
+          </div>    
+!          
+          </div>
+  
+! <div class="cheatButtons">
+! 		 <button id ="save1Button" onclick="save1()">SAVE SLOT 1</button>
+          <button id ="load1Button" onclick="load1()">LOAD SLOT 1</button><br /> 
+          <button id ="save2Button" onclick="save2()">SAVE SLOT 2</button>
+          <button id ="load2Button" onclick="load2()">LOAD SLOT 2</button><br />    
+***************
+*** 351,361 ****
+          <button id ="freePrestigeS" onclick="cheatPrestigeS()">Free Prestige S</button>
+          <button id ="debugBattleNumbers" onclick="setB()">Set Battle Number 1 to 7</button><br /> 
+          <button id ="availMatterZero" onclick="zeroMatter()">Set Avail Matter to 0</button><br />     
+! 
+! -->
+! 
+! 
+! 
+  
+               
+          </div>
+--- 311,318 ----
+          <button id ="freePrestigeS" onclick="cheatPrestigeS()">Free Prestige S</button>
+          <button id ="debugBattleNumbers" onclick="setB()">Set Battle Number 1 to 7</button><br /> 
+          <button id ="availMatterZero" onclick="zeroMatter()">Set Avail Matter to 0</button><br />     
+! 		<br />
+! </div>
+  
+               
+          </div>
+***************
+*** 938,947 ****
+              
+              
+          </div>
+!         <script type="text/javascript" src="combat.js?v3"></script>     
+!         <script type="text/javascript" src="globals.js?v3"></script>      
+!         <script type="text/javascript" src="projects.js?v3"></script>   
+!         <script type="text/javascript" src="main.js?v3"></script>
+!         
+      </body>
+! </html>
+\ No newline at end of file
+--- 895,904 ----
+              
+              
+          </div>
+!         <script type="text/javascript" src="combat.js?v2"></script>     
+!         <script type="text/javascript" src="globals.js?v2"></script>      
+!         <script type="text/javascript" src="projects.js?v2"></script> 
+! 		<script type="text/javascript" src="clipmod.js"></script>
+!         <script type="text/javascript" src="main.js?v2"></script>
+      </body>
+! </html>
 diff -crB original/index.html ./index.html
 *** original/index.html	2017-11-14 09:38:17.000000000 -0500
---- ./index.html	2025-05-22 11:25:04.705003225 -0400
+--- ./index.html	2025-07-12 14:24:51.674973615 -0400
 ***************
 *** 1,8 ****
   <html>
@@ -64,101 +223,65 @@ diff -crB original/index.html ./index.html
       
 !     </body>
 \ No newline at end of file
-Only in ./: index.html.orig
-Only in ./: index2-cheats.html
-Only in ./: index2-examplemod.html
-diff -crB original/index2.html ./index2.html
-*** original/index2.html	2018-02-03 17:00:23.000000000 -0500
---- ./index2.html	2025-05-22 11:25:06.526000000 -0400
-***************
-*** 323,363 ****
-          onclick="makeMegaClipper()">MegaClippers</button> <span class = "engineText6" id="megaClipperLevel">0</span></p>
-          Cost: $ <span id="megaClipperCost">500</span><br />
-          </div>    
-!                   
-          </div>
-  
-          <br />
-  
-!            
-! <!--
-! 
-! 
-!         <button id ="save1Button" onclick="save1()">SAVE SLOT 1</button>
-!         <button id ="load1Button" onclick="load1()">LOAD SLOT 1</button><br /> 
-!         <button id ="save2Button" onclick="save2()">SAVE SLOT 2</button>
-!         <button id ="load2Button" onclick="load2()">LOAD SLOT 2</button><br />    
-!         <button id ="resetButton" onclick="reset()">RESET ALL PROGRESS</button><br />       
-! 
-!         <button id ="freeClipsButton" onclick="cheatClips()">Free Clips</button><br />    
-!         <button id ="freeMoneyButton" onclick="cheatMoney()">Free Money</button><br />
-!         <button id ="freeTrustButton" onclick="cheatTrust()">Free Trust</button><br />        
-!         <button id ="freeOpsButton" onclick="cheatOps()">Free Ops</button><br />
-!         <button id ="freeCreatButton" onclick="cheatCreat()">Free Creativity</button><br />
-!         <button id ="freeYomiButton" onclick="cheatYomi()">Free Yomi</button><br />    
-!         <button id ="resetPrestige" onclick="resetPrestige()">Reset Prestige</button><br />     
-!             
-!         <button id ="destroyAllHumansButton" onclick="cheatHypno()">Destroy all Humans</button><br />    
-!         <button id ="freePrestigeU" onclick="cheatPrestigeU()">Free Prestige U</button>
-!         <button id ="freePrestigeS" onclick="cheatPrestigeS()">Free Prestige S</button>
-!         <button id ="debugBattleNumbers" onclick="setB()">Set Battle Number 1 to 7</button><br /> 
-!         <button id ="availMatterZero" onclick="zeroMatter()">Set Avail Matter to 0</button><br />     
-  
-- -->
-- 
-- 
-- 
-- 
--              
-          </div>
-              
-  <!--Right Column-->
---- 323,335 ----
-          onclick="makeMegaClipper()">MegaClippers</button> <span class = "engineText6" id="megaClipperLevel">0</span></p>
-          Cost: $ <span id="megaClipperCost">500</span><br />
-          </div>    
-!          
-          </div>
-  
-          <br />
-  
-! 		<!-- Cheats are disabled. See clipmod/index2-cheats.html for cheats -->
-  
-          </div>
-              
-  <!--Right Column-->
-***************
-*** 938,947 ****
-              
-              
-          </div>
-!         <script type="text/javascript" src="combat.js?v3"></script>     
-!         <script type="text/javascript" src="globals.js?v3"></script>      
-!         <script type="text/javascript" src="projects.js?v3"></script>   
-!         <script type="text/javascript" src="main.js?v3"></script>
-          
-      </body>
-! </html>
-\ No newline at end of file
---- 910,920 ----
-              
-              
-          </div>
-!         <script type="text/javascript" src="combat.js?v2"></script>     
-!         <script type="text/javascript" src="globals.js?v2"></script>      
-!         <script type="text/javascript" src="projects.js?v2"></script> 
-! 		<script type="text/javascript" src="clipmod.js"></script>
-!         <script type="text/javascript" src="main.js?v2"></script>
-          
-      </body>
-! </html>
-Only in ./: index2.html.orig
-Only in ./: index2.html.rej
-Only in ./: interface.css.orig
+Only in ./: LICENSE
 Only in ./: logo.png
 diff -crB original/main.js ./main.js
 *** original/main.js	2018-02-03 17:00:22.000000000 -0500
---- ./main.js	2025-05-22 12:09:20.328000000 -0400
+--- ./main.js	2025-07-12 14:24:51.674973615 -0400
+***************
+*** 3326,3376 ****
+  function setB(){
+      battleNumbers[1] = 7;
+  }
+- 
+- function cheatClips(){
+-     clips = clips + 100000000;
+-     unusedClips = unusedClips + 100000000;
+-     displayMessage("you just cheated");
+-     }
+- 
+- function cheatMoney(){
+-     funds = funds + 10000000;
+-     fundsElement.innerHTML = formatWithCommas(funds,2);
+-     displayMessage("LIZA just cheated");
+-     }
+- 
+- function cheatTrust(){
+-     trust = trust+1;
+-     displayMessage("Hilary is nice. Also, Liza just cheated");
+-     }
+- 
+- function cheatOps(){
+-     standardOps = standardOps + 10000;
+-     displayMessage("you just cheated, Liza");
+-     }
+- 
+- function cheatCreat(){
+-     creativityOn = 1;
+-     creativity = creativity + 1000;
+-     displayMessage("Liza just cheated. Very creative!");
+-     }
+- 
+- function cheatYomi(){
+-     yomi = yomi + 1000000;
+-     yomiDisplayElement.innerHTML = formatWithCommas(yomi);
+-     displayMessage("you just cheated");
+-     }
+- 
+- function cheatHypno(){
+-     hypnoDroneEvent();
+-     }
+- 
+- function zeroMatter(){
+-     availableMatter = 0;
+-     displayMessage("you just cheated");
+-     }
+-     
+- 
+  function calculateTrust(){
+      if (clips>(nextTrust-1)){
+          trust = trust +1;
+--- 3326,3331 ----
 ***************
 *** 4974,4980 ****
           probeUsedTrust: probeUsedTrust,
@@ -168,7 +291,7 @@ diff -crB original/main.js ./main.js
       
           }
       
---- 4974,4982 ----
+--- 4929,4937 ----
           probeUsedTrust: probeUsedTrust,
           probeTrustCost: probeTrustCost,
           probeLaunchLevel: probeLaunchLevel,
@@ -188,7 +311,7 @@ diff -crB original/main.js ./main.js
           }
       
       localStorage.setItem("saveGame1",JSON.stringify(saveGame));
---- 5265,5273 ----
+--- 5220,5228 ----
           probeUsedTrust: probeUsedTrust,
           probeTrustCost: probeTrustCost,
           probeLaunchLevel: probeLaunchLevel,
@@ -207,7 +330,7 @@ diff -crB original/main.js ./main.js
       
           }
       
---- 5555,5563 ----
+--- 5510,5518 ----
           probeUsedTrust: probeUsedTrust,
           probeTrustCost: probeTrustCost,
           probeLaunchLevel: probeLaunchLevel,
@@ -229,7 +352,7 @@ diff -crB original/main.js ./main.js
       for(var i=0; i < projects.length; i++){
       
       projects[i].uses = loadProjectsUses[i];
---- 5846,5855 ----
+--- 5802,5811 ----
           probeTrustCost = loadGame.probeTrustCost;
           probeLaunchLevel = loadGame.probeLaunchLevel;
           probeCost = loadGame.probeCost;
@@ -242,7 +365,7 @@ diff -crB original/main.js ./main.js
       projects[i].uses = loadProjectsUses[i];
 ***************
 *** 6168,6173 ****
---- 6172,6179 ----
+--- 6128,6135 ----
           probeLaunchLevel = loadGame.probeLaunchLevel;
           probeCost = loadGame.probeCost;
       
@@ -260,7 +383,7 @@ diff -crB original/main.js ./main.js
           project40b.priceTag = "($" + formatWithCommas(bribe)+")";
       project51.priceTag =  "(" + qChipCost + " ops)";
       
---- 6478,6485 ----
+--- 6434,6441 ----
           probeTrustCost = loadGame.probeTrustCost;
           probeLaunchLevel = loadGame.probeLaunchLevel;
           probeCost = loadGame.probeCost;
@@ -269,8 +392,7 @@ diff -crB original/main.js ./main.js
           project40b.priceTag = "($" + formatWithCommas(bribe)+")";
       project51.priceTag =  "(" + qChipCost + " ops)";
       
-Only in ./: main.js.orig
+Only in ./: Makefile
 Only in ./: original
-Only in ./: projects.js.orig
-Only in ./: titlescreen.css.orig
+Only in ./: README.md
 Only in ./: update.sh
