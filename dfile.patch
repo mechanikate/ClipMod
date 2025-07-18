@@ -65,10 +65,10 @@ diff -crB original/index.html ./index.html
 \ No newline at end of file
 diff -crB original/index2.html ./index2.html
 *** original/index2.html	2018-02-03 17:00:23.000000000 -0500
---- ./index2.html	2025-07-17 13:02:40.702245730 -0400
+--- ./index2.html	2025-07-18 13:16:34.563316504 -0400
 ***************
 *** 1,17 ****
-! <html>
+  <html>
       <head>
 !         <meta name="viewport" content="width=device-width, initial-scale=1">
 !         <link rel="stylesheet" type="text/css" href="interface.css?v2" />
@@ -86,7 +86,7 @@ diff -crB original/index2.html ./index2.html
       
       <body>
 --- 1,6 ----
-! <html
+  <html>
       <head>
 !         <link rel="stylesheet" type="text/css" href="interface.css" />
       </head>
@@ -227,6 +227,62 @@ diff -crB original/index2.html ./index2.html
       </body>
 ! </html>
 Only in ./: logo.png
+diff -crB original/main.js ./main.js
+*** original/main.js	2018-02-03 17:00:22.000000000 -0500
+--- ./main.js	2025-07-18 13:17:12.294878377 -0400
+***************
+*** 3327,3376 ****
+      battleNumbers[1] = 7;
+  }
+  
+- function cheatClips(){
+-     clips = clips + 100000000;
+-     unusedClips = unusedClips + 100000000;
+-     displayMessage("you just cheated");
+-     }
+- 
+- function cheatMoney(){
+-     funds = funds + 10000000;
+-     fundsElement.innerHTML = formatWithCommas(funds,2);
+-     displayMessage("LIZA just cheated");
+-     }
+- 
+- function cheatTrust(){
+-     trust = trust+1;
+-     displayMessage("Hilary is nice. Also, Liza just cheated");
+-     }
+- 
+- function cheatOps(){
+-     standardOps = standardOps + 10000;
+-     displayMessage("you just cheated, Liza");
+-     }
+- 
+- function cheatCreat(){
+-     creativityOn = 1;
+-     creativity = creativity + 1000;
+-     displayMessage("Liza just cheated. Very creative!");
+-     }
+- 
+- function cheatYomi(){
+-     yomi = yomi + 1000000;
+-     yomiDisplayElement.innerHTML = formatWithCommas(yomi);
+-     displayMessage("you just cheated");
+-     }
+- 
+- function cheatHypno(){
+-     hypnoDroneEvent();
+-     }
+- 
+- function zeroMatter(){
+-     availableMatter = 0;
+-     displayMessage("you just cheated");
+-     }
+-     
+- 
+  function calculateTrust(){
+      if (clips>(nextTrust-1)){
+          trust = trust +1;
+--- 3327,3332 ----
 Only in ./: modmenu.js
 Only in ./: original
 Only in ./: update.sh
