@@ -11,7 +11,7 @@ setup:
 	cp ./$(WORKINGDIR)/* .
 	find $(WORKINGDIR) -name '*\?*' -type f -exec sh -c 'for fp; do fn=$${fp##*/}; mv "$$fp" "$${fp%/*}/$${fn%%\?*}"; done' sh {} +
 	rm -r $(PAPERCLIPSDOMAIN) || echo "rm -r-ing the Paperclips source directory failed, make sure PAPERCLIPSDOMAIN didnt mess up"
-	patch -p1 -t < dfile.patch
+	patch -p1 < dfile.patch
 
 .ONESHELL:
 update:
