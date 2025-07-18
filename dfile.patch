@@ -1,13 +1,71 @@
+Only in ./: .git
+Only in ./: .gitignore
+Only in ./: LICENSE
+Only in ./: Makefile
+Only in ./: README.md
 Only in ./: apply.sh
 Only in ./: clipmod.js
 Only in ./: clipmod.png
 Only in ./: dfile.patch
 Only in ./: exampleMod.js
-Only in ./: .git
-Only in ./: .gitignore
+diff -crB original/index.html ./index.html
+*** original/index.html	2017-11-14 09:38:17.000000000 -0500
+--- ./index.html	2025-07-17 13:02:40.974620436 -0400
+***************
+*** 1,8 ****
+  <html>
+      <head>
+!     <meta name="viewport" content="width=device-width, initial-scale=1">
+!     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+!     <link rel="stylesheet" type="text/css" href="titlescreen.css?v2" />
+          <!-- Global Site Tag (gtag.js) - Google Analytics -->
+          <script async src="https://www.googletagmanager.com/gtag/js?id=UA-107491380-1"></script>
+          <script>
+--- 1,6 ----
+  <html>
+      <head>
+!     <link rel="stylesheet" type="text/css" href="titlescreen.css" />
+          <!-- Global Site Tag (gtag.js) - Google Analytics -->
+          <script async src="https://www.googletagmanager.com/gtag/js?id=UA-107491380-1"></script>
+          <script>
+***************
+*** 26,50 ****
+  </a>
+  
+  </div>
+- 
+- <div id="mobile">
+- 	<div id="mobile-content">
+- 		<div id="mobile-title">
+- 			<img src="mobile-title.png">
+- 		</div>
+- 		<div id="mobile-main-text">
+- 			The web version of this game was<br /> 
+- 			not designed to work on phones.<br />
+- 			Grab the mobile version below.
+- 		</div>
+- 		<div id="mobile-badges">
+- 			<a href="https://itunes.apple.com/us/app/universal-paperclips/id1300634274?ls=1&mt=8"><img src="apple_badge.svg"></a>
+- 			<div id="fake-android">(Android version coming soon)</div>
+- 		</div>
+- 	</div> <!-- END mobile-content -->
+- 	<div id="mobile-footer">
+- 		<a href="index2.html">continue to web version</a>
+- 	</div>
+- </div> <!-- END mobile -->
+      
+! </body>
+\ No newline at end of file
+--- 24,28 ----
+  </a>
+  
+  </div>
+      
+!     </body>
+\ No newline at end of file
 diff -crB original/index2.html ./index2.html
 *** original/index2.html	2018-02-03 17:00:23.000000000 -0500
---- ./index2.html	2025-07-12 14:24:51.671640282 -0400
+--- ./index2.html	2025-07-17 13:02:40.702245730 -0400
 ***************
 *** 1,17 ****
 ! <html>
@@ -168,231 +226,7 @@ diff -crB original/index2.html ./index2.html
 !         <script type="text/javascript" src="main.js?v2"></script>
       </body>
 ! </html>
-diff -crB original/index.html ./index.html
-*** original/index.html	2017-11-14 09:38:17.000000000 -0500
---- ./index.html	2025-07-12 14:24:51.674973615 -0400
-***************
-*** 1,8 ****
-  <html>
-      <head>
-!     <meta name="viewport" content="width=device-width, initial-scale=1">
-!     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
-!     <link rel="stylesheet" type="text/css" href="titlescreen.css?v2" />
-          <!-- Global Site Tag (gtag.js) - Google Analytics -->
-          <script async src="https://www.googletagmanager.com/gtag/js?id=UA-107491380-1"></script>
-          <script>
---- 1,6 ----
-  <html>
-      <head>
-!     <link rel="stylesheet" type="text/css" href="titlescreen.css" />
-          <!-- Global Site Tag (gtag.js) - Google Analytics -->
-          <script async src="https://www.googletagmanager.com/gtag/js?id=UA-107491380-1"></script>
-          <script>
-***************
-*** 26,50 ****
-  </a>
-  
-  </div>
-- 
-- <div id="mobile">
-- 	<div id="mobile-content">
-- 		<div id="mobile-title">
-- 			<img src="mobile-title.png">
-- 		</div>
-- 		<div id="mobile-main-text">
-- 			The web version of this game was<br /> 
-- 			not designed to work on phones.<br />
-- 			Grab the mobile version below.
-- 		</div>
-- 		<div id="mobile-badges">
-- 			<a href="https://itunes.apple.com/us/app/universal-paperclips/id1300634274?ls=1&mt=8"><img src="apple_badge.svg"></a>
-- 			<div id="fake-android">(Android version coming soon)</div>
-- 		</div>
-- 	</div> <!-- END mobile-content -->
-- 	<div id="mobile-footer">
-- 		<a href="index2.html">continue to web version</a>
-- 	</div>
-- </div> <!-- END mobile -->
-      
-! </body>
-\ No newline at end of file
---- 24,28 ----
-  </a>
-  
-  </div>
-      
-!     </body>
-\ No newline at end of file
-Only in ./: LICENSE
 Only in ./: logo.png
-diff -crB original/main.js ./main.js
-*** original/main.js	2018-02-03 17:00:22.000000000 -0500
---- ./main.js	2025-07-12 14:24:51.674973615 -0400
-***************
-*** 3326,3376 ****
-  function setB(){
-      battleNumbers[1] = 7;
-  }
-- 
-- function cheatClips(){
--     clips = clips + 100000000;
--     unusedClips = unusedClips + 100000000;
--     displayMessage("you just cheated");
--     }
-- 
-- function cheatMoney(){
--     funds = funds + 10000000;
--     fundsElement.innerHTML = formatWithCommas(funds,2);
--     displayMessage("LIZA just cheated");
--     }
-- 
-- function cheatTrust(){
--     trust = trust+1;
--     displayMessage("Hilary is nice. Also, Liza just cheated");
--     }
-- 
-- function cheatOps(){
--     standardOps = standardOps + 10000;
--     displayMessage("you just cheated, Liza");
--     }
-- 
-- function cheatCreat(){
--     creativityOn = 1;
--     creativity = creativity + 1000;
--     displayMessage("Liza just cheated. Very creative!");
--     }
-- 
-- function cheatYomi(){
--     yomi = yomi + 1000000;
--     yomiDisplayElement.innerHTML = formatWithCommas(yomi);
--     displayMessage("you just cheated");
--     }
-- 
-- function cheatHypno(){
--     hypnoDroneEvent();
--     }
-- 
-- function zeroMatter(){
--     availableMatter = 0;
--     displayMessage("you just cheated");
--     }
--     
-- 
-  function calculateTrust(){
-      if (clips>(nextTrust-1)){
-          trust = trust +1;
---- 3326,3331 ----
-***************
-*** 4974,4980 ****
-          probeUsedTrust: probeUsedTrust,
-          probeTrustCost: probeTrustCost,
-          probeLaunchLevel: probeLaunchLevel,
-!         probeCost: probeCost
-      
-          }
-      
---- 4929,4937 ----
-          probeUsedTrust: probeUsedTrust,
-          probeTrustCost: probeTrustCost,
-          probeLaunchLevel: probeLaunchLevel,
-!         probeCost: probeCost,
-! 		moddedPurchasedProjects: moddedPurchased,
-! 		boughtStrats: JSON.stringify(boughtStrats)
-      
-          }
-      
-***************
-*** 5263,5270 ****
-          probeUsedTrust: probeUsedTrust,
-          probeTrustCost: probeTrustCost,
-          probeLaunchLevel: probeLaunchLevel,
-!         probeCost: probeCost
-!     
-          }
-      
-      localStorage.setItem("saveGame1",JSON.stringify(saveGame));
---- 5220,5228 ----
-          probeUsedTrust: probeUsedTrust,
-          probeTrustCost: probeTrustCost,
-          probeLaunchLevel: probeLaunchLevel,
-!         probeCost: probeCost,
-! 		moddedPurchasedProjects: moddedPurchased,
-! 		boughtStrats: JSON.stringify(boughtStrats)
-          }
-      
-      localStorage.setItem("saveGame1",JSON.stringify(saveGame));
-***************
-*** 5552,5558 ****
-          probeUsedTrust: probeUsedTrust,
-          probeTrustCost: probeTrustCost,
-          probeLaunchLevel: probeLaunchLevel,
-!         probeCost: probeCost
-      
-          }
-      
---- 5510,5518 ----
-          probeUsedTrust: probeUsedTrust,
-          probeTrustCost: probeTrustCost,
-          probeLaunchLevel: probeLaunchLevel,
-!         probeCost: probeCost,
-! 		moddedPurchasedProjects: moddedPurchased,
-! 		boughtStrats: JSON.stringify(boughtStrats)
-      
-          }
-      
-***************
-*** 5842,5851 ****
-          probeTrustCost = loadGame.probeTrustCost;
-          probeLaunchLevel = loadGame.probeLaunchLevel;
-          probeCost = loadGame.probeCost;
--     
-          project40b.priceTag = "($" + formatWithCommas(bribe)+")";
-      project51.priceTag =  "(" + qChipCost + " ops)";
-!     
-      for(var i=0; i < projects.length; i++){
-      
-      projects[i].uses = loadProjectsUses[i];
---- 5802,5811 ----
-          probeTrustCost = loadGame.probeTrustCost;
-          probeLaunchLevel = loadGame.probeLaunchLevel;
-          probeCost = loadGame.probeCost;
-          project40b.priceTag = "($" + formatWithCommas(bribe)+")";
-      project51.priceTag =  "(" + qChipCost + " ops)";
-!     moddedPurchased = loadGame.moddedPurchasedProjects;	
-! 	boughtStrats = JSON.parse(loadGame.boughtStrats);
-      for(var i=0; i < projects.length; i++){
-      
-      projects[i].uses = loadProjectsUses[i];
-***************
-*** 6168,6173 ****
---- 6128,6135 ----
-          probeLaunchLevel = loadGame.probeLaunchLevel;
-          probeCost = loadGame.probeCost;
-      
-+    		moddedPurchased = loadGame.moddedPurchasedProjects;	
-+ 		boughtStrats = JSON.parse(loadGame.boughtStrats);
-          project40b.priceTag = "($" + formatWithCommas(bribe)+")";
-      project51.priceTag =  "(" + qChipCost + " ops)";
-      
-***************
-*** 6472,6478 ****
-          probeTrustCost = loadGame.probeTrustCost;
-          probeLaunchLevel = loadGame.probeLaunchLevel;
-          probeCost = loadGame.probeCost;
-!     
-          project40b.priceTag = "($" + formatWithCommas(bribe)+")";
-      project51.priceTag =  "(" + qChipCost + " ops)";
-      
---- 6434,6441 ----
-          probeTrustCost = loadGame.probeTrustCost;
-          probeLaunchLevel = loadGame.probeLaunchLevel;
-          probeCost = loadGame.probeCost;
-!     moddedPurchased = loadGame.moddedPurchasedProjects;	
-! 	boughtStrats = JSON.parse(loadGame.boughtStrats);
-          project40b.priceTag = "($" + formatWithCommas(bribe)+")";
-      project51.priceTag =  "(" + qChipCost + " ops)";
-      
-Only in ./: Makefile
+Only in ./: modmenu.js
 Only in ./: original
-Only in ./: README.md
 Only in ./: update.sh
