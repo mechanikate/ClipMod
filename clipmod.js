@@ -18,7 +18,7 @@ let moddedProjects = {}; // stores all of the projects made by ClipMod mods
 let installedModids = ["clipmod"]; // base library is all it starts with
 let boughtStrats = [];
 let installedModUrls = [
-	...new Set(JSON.parse(setIfBlank(localStorage.getItem("installedModUrls"))))
+	...new Set(JSON.parse(setIfBlank(localStorage.getItem("installedModUrls"), "[]")))
 ];
 let resetHooks = [
 	() => localStorage.removeItem("installedModUrls")
