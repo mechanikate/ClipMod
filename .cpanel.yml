@@ -1,4 +1,6 @@
 ---
 deployment:
  tasks:
- - bash ./apply.sh
+ - export DEPLOYPATH=~/public_html/cm/
+ - /bin/bash ./apply.sh
+ - /bin/cp * $DEPLOYPATH
