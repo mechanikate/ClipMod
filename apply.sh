@@ -21,6 +21,7 @@ for fp; do
   fn=${fp##*/}
   mv "$fp" "${fp%/*}/${fn%%\?*}"
 done' sh {} +
+cp index2.html index2-all.html
 colored_echo 'Patching...'
 patch -p1 < dfile.patch
 colored_echo 'All done! Open index2.html to play.'
