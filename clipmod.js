@@ -6,7 +6,13 @@
 
 const clipmodVersion = "v1.1.0"; // version of ClipMod!
 const setIfBlank = (val, defaulting) => (val == undefined || (Array.isArray(val) && val.length == 0) || (typeof val === "number" && isNaN(val)) || val == null) ? defaulting : val;
-let clipHooks = []; // functions to run on window load
+let clipHooks = [ // functions to run on window load
+	() => { // Log that ClipMod is done loading here
+		console.log("(ClipMod) Disabling cheats by default (toggle with `toggleCheats();`)");
+		toggleCheats(false);
+		console.log("(ClipMod) Cheats disabled.");
+	} 
+];
 let moddedPurchased = []; // all purchased project *ids* go here!
 let moddedProjects = {}; // stores all of the projects made by ClipMod mods
 let installedModids = ["clipmod"]; // base library is all it starts with

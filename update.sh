@@ -10,4 +10,5 @@ find . -name '*\?*' | while read -r path ; do
     mv "$path" "${path%\?*}"
 done
 
+cp original/index2.html original/index2-all.html
 diff -crB original/ ./ > dfile.patch

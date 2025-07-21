@@ -46,13 +46,6 @@
 			rightCol.appendChild(parentDiv);
 
 			console.log("(ClipMod) Interface created.");
-		},
-		() => { // Log that ClipMod is done loading here
-			console.log("(ClipMod) Disabling cheats by default (toggle with `toggleCheats();`)");
-
-			toggleCheats(false);
-
-			console.log("(ClipMod) Cheats disabled.");
-		} 
+		}
 	);
 })();
