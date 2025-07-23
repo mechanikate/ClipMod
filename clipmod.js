@@ -11,7 +11,15 @@ let clipHooks = [ // functions to run on window load
 		console.log("(ClipMod) Disabling cheats by default (toggle with `toggleCheats();`)");
 		toggleCheats(false);
 		console.log("(ClipMod) Cheats disabled.");
-	} 
+	},
+	() => {
+		console.log("(ClipMod) Loading already purchased projects");
+		moddedPurchased = JSON.parse(
+			setIfBlank(	localStorage.getItem("moddedPurchased"),
+						"[]")
+		);
+		console.log("(ClipMod) Loading already purchased projects done.");
+	}	
 ];
 let moddedPurchased = []; // all purchased project *ids* go here!
 let moddedProjects = {}; // stores all of the projects made by ClipMod mods
@@ -21,7 +29,11 @@ let installedModUrls = [
 	...new Set(JSON.parse(setIfBlank(localStorage.getItem("installedModUrls"), "[]")))
 ];
 let resetHooks = [
-	() => localStorage.removeItem("installedModUrls")
+	() => localStorage.removeItem("installedModUrls"),
+	() => localStorage.removeItem("moddedPurchased")
+];
+let saveHooks = [
+	() => localStorage.setItem("moddedPurchased", JSON.stringify(moddedPurchased))
 ];
 let [cheatClips, cheatMoney, cheatTrust, cheatOps, cheatCreat, cheatYomi, cheatHypno, zeroMatter] = [ // All of the cheating functions implemented from base game but with variable amounts to cheat in as parameters. Defaults are set to base game defaults
 	(amt = 1e8) => {clips 		+= 	amt;																				},
@@ -87,6 +99,10 @@ class Mod {
 	}
 	addResetHook(func) { // runs on reset
 		resetHooks.push(func);
+		return this;
+	}
+	addSaveHook(func) { // runs on save
+		saveHooks.push(func);
 		return this;
 	}
 }

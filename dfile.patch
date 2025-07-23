@@ -231,7 +231,7 @@ diff -crB original/index2.html ./index2.html
 Only in ./: logo.png
 diff -crB original/main.js ./main.js
 *** original/main.js	2018-02-03 17:00:22.000000000 -0500
---- ./main.js	2025-07-23 12:37:05.814835000 -0400
+--- ./main.js	2025-07-23 12:42:37.944151691 -0400
 ***************
 *** 2008,2013 ****
 --- 2008,2014 ----
@@ -305,6 +305,23 @@ diff -crB original/main.js ./main.js
       if (clips>(nextTrust-1)){
           trust = trust +1;
 --- 3329,3334 ----
+***************
+*** 4983,4989 ****
+      localStorage.setItem("saveProjectsFlags",JSON.stringify(projectsFlags));
+      localStorage.setItem("saveProjectsActive",JSON.stringify(projectsActive));
+      localStorage.setItem("saveStratsActive",JSON.stringify(stratsActive));
+!     
+  }
+  
+  function save1() {
+--- 4941,4947 ----
+      localStorage.setItem("saveProjectsFlags",JSON.stringify(projectsFlags));
+      localStorage.setItem("saveProjectsActive",JSON.stringify(projectsActive));
+      localStorage.setItem("saveStratsActive",JSON.stringify(stratsActive));
+!    	saveHooks.forEach(f => f()); 
+  }
+  
+  function save1() {
 Only in ./: modmenu.js
 Only in ./: original
 Only in ./: update.sh
