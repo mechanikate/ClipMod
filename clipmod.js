@@ -4,21 +4,21 @@
  * Your most useful resource, as of now, will be exampleMod.js 
  */
 
-const clipmodVersion = "v1.1.0"; // version of ClipMod!
+const clipmodVersion = "v1.2.0"; // version of ClipMod!
 const setIfBlank = (val, defaulting) => (val == undefined || (Array.isArray(val) && val.length == 0) || (typeof val === "number" && isNaN(val)) || val == null) ? defaulting : val;
 let clipHooks = [ // functions to run on window load
 	() => { // Log that ClipMod is done loading here
-		console.log("(ClipMod) Disabling cheats by default (toggle with `toggleCheats();`)");
+		cm.log("Disabling cheats by default (toggle with `toggleCheats();`)");
 		toggleCheats(false);
-		console.log("(ClipMod) Cheats disabled.");
+		cm.log("Cheats disabled.");
 	},
 	() => {
-		console.log("(ClipMod) Loading already purchased projects");
+		cm.log("Loading already purchased projects");
 		moddedPurchased = JSON.parse(
 			setIfBlank(	localStorage.getItem("moddedPurchased"),
 						"[]")
 		);
-		console.log("(ClipMod) Loading already purchased projects done.");
+		cm.log("Loading already purchased projects done.");
 	}	
 ];
 let moddedPurchased = []; // all purchased project *ids* go here!
@@ -47,9 +47,9 @@ let [cheatClips, cheatMoney, cheatTrust, cheatOps, cheatCreat, cheatYomi, cheatH
 
 ];
 const clipInit = () => {
-    console.log("(ClipMod) Loading hooks...");
+    cm.log("Loading hooks...");
     clipHooks.forEach(hook => hook()); // run each hook on init
-    console.log("(ClipMod) Hooks done."); // alert the user we're all ready
+    cm.log("Hooks done."); // alert the user we're all ready
 };
 const addCommas = num => num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); // formats numbers (e.g. from 2500000.32 --> 2,500,000.32)from https://stackoverflow.com/a/2901298
 const isPurchased = (modid, pid) => !!moddedProjects[modid][pid].obj.flag; // is this project purchased? we have to use !! here because the flag value is 0 or 1, not false or true
@@ -104,6 +104,15 @@ class Mod {
 	addSaveHook(func) { // runs on save
 		saveHooks.push(func);
 		return this;
+	}
+	log(str) { // formatted log
+		console.log(`%c(log: ${this.modid} @ ${new Date().toLocaleTimeString()})`+`%c ${str}`, `font-weight:bold;`,``); 
+	}
+	warn(str) {
+		console.log(`%c(warn: ${this.modid} @ ${new Date().toLocaleTimeString()})`+`%c ${str}`, `font-weight:bold;color:#a0a000;`,`color:#a0a000`); 
+	}
+	error(str) {
+		console.log(`%c(error: ${this.modid} @ ${new Date().toLocaleTimeString()})`+`%c ${str}`, `font-weight:bold;color:#f00000;`,`color:#f00000`); 
 	}
 }
 class Project {
@@ -263,6 +272,7 @@ class Strategy { // implementing custom Strategic Modeling strats
 		);
 	}
 };
+var cm = new Mod("clipmod");
 installedModUrls.forEach(url => {
 	let script = document.createElement("script");
 	script.src = url;

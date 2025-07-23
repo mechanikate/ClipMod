@@ -1,8 +1,8 @@
 (() => {
-	const modMenu = new Mod("modMenu");
+	const modMenu = new Mod("modmenu");
 	modMenu.addHook(
 		() => {
-			console.log("(ClipMod) Creating mod interface (toggle with `toggleModMenu();`)");
+			modMenu.log("Creating mod interface (toggle with `toggleModMenu();`)");
 
 			const rightCol = document.getElementById("leftColumn");
 			const parentDiv = document.createElement("div");
@@ -45,7 +45,7 @@
 
 			rightCol.appendChild(parentDiv);
 
-			console.log("(ClipMod) Interface created.");
+			modMenu.log("Mod interface created.");
 		}
 	);
 })();
