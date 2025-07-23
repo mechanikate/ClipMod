@@ -11,7 +11,7 @@ Only in ./: dfile.patch
 Only in ./: exampleMod.js
 diff -crB original/index.html ./index.html
 *** original/index.html	2017-11-14 09:38:17.000000000 -0500
---- ./index.html	2025-07-17 13:02:40.974620436 -0400
+--- ./index.html	2025-07-23 12:46:28.274761691 -0400
 ***************
 *** 1,8 ****
   <html>
@@ -64,10 +64,9 @@ diff -crB original/index.html ./index.html
       
 !     </body>
 \ No newline at end of file
-Only in original/: index2-all.html
 diff -crB original/index2.html ./index2.html
 *** original/index2.html	2018-02-03 17:00:23.000000000 -0500
---- ./index2.html	2025-07-18 13:16:34.563316504 -0400
+--- ./index2.html	2025-07-23 12:46:28.275105293 -0400
 ***************
 *** 1,17 ****
   <html>
@@ -231,7 +230,24 @@ diff -crB original/index2.html ./index2.html
 Only in ./: logo.png
 diff -crB original/main.js ./main.js
 *** original/main.js	2018-02-03 17:00:22.000000000 -0500
---- ./main.js	2025-07-23 12:42:37.944151691 -0400
+--- ./main.js	2025-07-23 13:02:36.915726572 -0400
+***************
+*** 8,14 ****
+  var threnodyAudio;
+  
+  function loadThrenody() {
+!     threnodyAudio.src = "test.mp3";
+      threnodyAudio.addEventListener('canplaythrough', threnodyLoaded);
+  }
+  
+--- 8,14 ----
+  var threnodyAudio;
+  
+  function loadThrenody() {
+!     threnodyAudio.src = "teeeemp3";
+      threnodyAudio.addEventListener('canplaythrough', threnodyLoaded);
+  }
+  
 ***************
 *** 2008,2013 ****
 --- 2008,2014 ----
@@ -322,6 +338,16 @@ diff -crB original/main.js ./main.js
   }
   
   function save1() {
+***************
+*** 6487,6492 ****
+--- 6445,6451 ----
+      localStorage.removeItem("saveProjectsFlags");
+      localStorage.removeItem("saveProjectsActive");
+      localStorage.removeItem("saveStratsActive");
++ 	resetHooks.forEach(f => f());
+      location.reload();
+  }
+  
 Only in ./: modmenu.js
 Only in ./: original
 Only in ./: update.sh

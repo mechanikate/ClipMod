@@ -2,7 +2,7 @@ const myMod = new Mod("exampleMod");
 myMod.addProject(
 	"AutoClipper Shenanigans", // project name
 	"Adds 500 clippers and gives you 2,000 yomi", // project description
-	{operations:1000,trust:1,clipomakerLevel:1,yomi:1000}, // project price (the things you actually have to lose to get the project)
+	{operations:1000,trust:1,clipmakerLevel:1,yomi:1000}, // project price (the things you actually have to lose to get the project)
 	{operations:500}, // project requirements (the things to show the project in the list of projects, happens usually before price is met)
 	"This seems silly", // what to output in the console display thing?
 	() => { // what to run when bought
