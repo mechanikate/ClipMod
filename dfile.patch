@@ -1,6 +1,7 @@
 Only in ./: .cpanel.yml
 Only in ./: .git
 Only in ./: .gitignore
+Only in ./: .jshintrc
 Only in ./: LICENSE
 Only in ./: Makefile
 Only in ./: README.md
@@ -66,7 +67,7 @@ diff -crB original/index.html ./index.html
 \ No newline at end of file
 diff -crB original/index2.html ./index2.html
 *** original/index2.html	2018-02-03 17:00:23.000000000 -0500
---- ./index2.html	2025-07-23 12:46:28.275105293 -0400
+--- ./index2.html	2025-07-26 17:47:13.357146429 -0400
 ***************
 *** 1,17 ****
   <html>
@@ -216,7 +217,7 @@ diff -crB original/index2.html ./index2.html
       </body>
 ! </html>
 \ No newline at end of file
---- 895,904 ----
+--- 895,905 ----
               
               
           </div>
@@ -225,12 +226,13 @@ diff -crB original/index2.html ./index2.html
 !         <script type="text/javascript" src="projects.js?v2"></script> 
 ! 		<script type="text/javascript" src="clipmod.js"></script>
 !         <script type="text/javascript" src="main.js?v2"></script>
+! 		<script type="text/javascript" src="modmenu.js"></script>
       </body>
 ! </html>
 Only in ./: logo.png
 diff -crB original/main.js ./main.js
 *** original/main.js	2018-02-03 17:00:22.000000000 -0500
---- ./main.js	2025-07-23 13:02:36.915726572 -0400
+--- ./main.js	2025-07-26 17:13:10.215133526 -0400
 ***************
 *** 8,14 ****
   var threnodyAudio;
@@ -322,6 +324,23 @@ diff -crB original/main.js ./main.js
           trust = trust +1;
 --- 3329,3334 ----
 ***************
+*** 4550,4556 ****
+      }
+      
+      
+! 
+      
+      
+  }, 10);
+--- 4508,4514 ----
+      }
+      
+      
+! 	tickHooks.forEach(func => func()); // run each hook that runs every tick
+      
+      
+  }, 10);
+***************
 *** 4983,4989 ****
       localStorage.setItem("saveProjectsFlags",JSON.stringify(projectsFlags));
       localStorage.setItem("saveProjectsActive",JSON.stringify(projectsActive));
@@ -350,4 +369,5 @@ diff -crB original/main.js ./main.js
   
 Only in ./: modmenu.js
 Only in ./: original
+Only in ./: percentUsedMod.js
 Only in ./: update.sh
