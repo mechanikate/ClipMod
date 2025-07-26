@@ -8,5 +8,5 @@ percentUsedMod.addHook(() => {
 percentUsedMod.addTickHook(() => {
 	var percent = unsoldClips/clips*100;
 	var orderOfMagnitude = Math.max(0,Math.floor(Math.abs(Math.log10(percent))));	
-	ele.innerHTML = ` (${(percent).toFixed(orderOfMagnitude)}% unused)`;
+	ele.innerHTML = `&nbsp;(${(percent).toFixed(orderOfMagnitude)}% unused)`;
 });
