@@ -1,5 +1,5 @@
 (() => {
-	const modMenu = new Mod("modmenu");
+	const modMenu = new Mod("modmenu", {major: 1, minor: 0, patch: 0});
 	modMenu.addHook(
 		() => {
 			modMenu.log("Creating mod interface (toggle with `toggleModMenu();`)");

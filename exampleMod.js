@@ -1,4 +1,4 @@
-const myMod = new Mod("exampleMod");
+const myMod = new Mod("exampleMod", {major: 1, minor: 0, patch: 0});
 myMod.addProject(
 	"AutoClipper Shenanigans", // project name
 	"Adds 500 clippers and gives you 2,000 yomi", // project description

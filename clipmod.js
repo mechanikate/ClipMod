@@ -4,7 +4,7 @@
  * Your most useful resource, as of now, will be exampleMod.js 
  */
 
-const clipmodVersion = "v1.2.0"; // version of ClipMod!
+const clipmodVersion = {major: 1, minor: 2, patch: 1}; // version of ClipMod!
 const setIfBlank = (val, defaulting) => (val == undefined || (Array.isArray(val) && val.length == 0) || (typeof val === "number" && isNaN(val)) || val == null) ? defaulting : val;
 let clipHooks = [ // functions to run on window load
 	() => { // Log that ClipMod is done loading here
@@ -70,12 +70,14 @@ const removeMod = (index=0) => {
 	window.location.reload();
 };
 class Mod {
-	constructor(modid) {
+	constructor(modid, version={major: 1, minor: 0, patch: 0}) {
 		this.modid = modid;
 		this.basePid = 1;
-		this.hooks = [];
 		this.projects = [];
 		this.strats = [];
+		this.version = version;
+		this.versionString = `v${this.version.major}.${this.version.minor}.${this.version.patch}`;
+		this.log(`Initialized ${this.modid} version ${this.versionString}`);
 	}
 	addProject(name, description, price, requirement, display, todo) {
 		let ourProject = new Project(name, description, this.basePid, price, requirement, display, todo, this.modid);
@@ -116,7 +118,7 @@ class Mod {
 	}
 }
 class Project {
-	constructor(name, description, pid, price, requirement, display, todo, modid, isStrat=false, stratOnlyParams=null) {
+	constructor(name, description, pid, price, requirement, display, todo, modid, isStrat=false, purchasedLoadHook = ()=>{}, stratOnlyParams=null) {
 		this.name = name;
 		this.description = description;
 		this.pid = pid;
@@ -128,6 +130,7 @@ class Project {
 		this.modid = modid;
 		this.isStrat = isStrat;
 		this.obj = {};
+		this.loadHook = purchasedLoadHook;
 		if(!installedModids.includes(this.modid)) installedModids.push(this.modid);
 		if(this.isStrat) this.stratOnlyParams = stratOnlyParams;
 	}
@@ -199,7 +202,10 @@ class Project {
 			activeProjects.splice(index, 1);
 			moddedPurchased.push(this.obj.id); // locally add our project's id to the moddedPurchased list to make sure it doesn't accidentally show up in available projects again
 		};
-		if(!this.obj.flag) projects.push(this.obj); // add our project to the master list of projects if it hasn't already been bought
+		if(!this.obj.flag) { projects.push(this.obj); } // add our project to the master list of projects if it hasn't already been bought
+		else {
+			this.loadHook(this);
+		}
 		moddedProjects[this.modid] = moddedProjects[this.modid] == undefined ? {} : moddedProjects[this.modid]; // validation to make sure moddedProjects[this.modid] isn't blank, this just fixes that case
 		moddedProjects[this.modid][this.pid] = { // add to our list of moddedProjects for referencing for debugging and other shenanigans
 			"class": this, // actual reference to class
@@ -268,11 +274,12 @@ class Strategy { // implementing custom Strategic Modeling strats
 			this.addStrat,
 			this.modid,
 			true,
+			() => _this.addStrat(_this),
 			_this
 		);
 	}
 };
-var cm = new Mod("clipmod");
+var cm = new Mod("clipmod", clipmodVersion);
 installedModUrls.forEach(url => {
 	let script = document.createElement("script");
 	script.src = url;
@@ -281,6 +288,6 @@ installedModUrls.forEach(url => {
 });
 window.onload = () => {
 	clipInit(); // Run all the hooks
-	displayMessage(`ClipMod enabled (${clipmodVersion})`) // Display a message in the game "console" that ClipMod is all ready
+	displayMessage(`ClipMod initialization finished (${cm.versionString})`) // Display a message in the game "console" that ClipMod is all ready
 	displayMessage(`Installed mods: ${installedModids.join(", ")}`);
 };
