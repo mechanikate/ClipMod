@@ -280,13 +280,14 @@ class Strategy { // implementing custom Strategic Modeling strats
 	}
 }
 var cm = new Mod("clipmod", clipmodVersion);
-installedModUrls.forEach(url => {
-	let script = document.createElement("script");
-	script.src = url;
-	script.onload = () => displayMessage(`Loaded mod @ ${url}`);
-	document.head.appendChild(script);
-});
+
 window.onload = () => {
+	installedModUrls.forEach(url => {
+		let script = document.createElement("script");
+		script.src = url;
+		script.onload = () => displayMessage(`Loaded mod @ ${url}`);
+		document.head.appendChild(script);
+	});
 	clipInit(); // Run all the hooks
 	displayMessage(`ClipMod initialization finished (${cm.versionString})`); // Display a message in the game "console" that ClipMod is all ready
 	displayMessage(`Installed mods: ${installedModids.join(", ")}`);
