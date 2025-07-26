@@ -35,6 +35,7 @@ let resetHooks = [
 let saveHooks = [
 	() => localStorage.setItem("moddedPurchased", JSON.stringify(moddedPurchased))
 ];
+let tickHooks = [];
 let [cheatClips, cheatMoney, cheatTrust, cheatOps, cheatCreat, cheatYomi, cheatHypno, zeroMatter] = [ // All of the cheating functions implemented from base game but with variable amounts to cheat in as parameters. Defaults are set to base game defaults
 	(amt = 1e8) => {clips 		+= 	amt;																				},
 	(amt = 1e7) => {funds 		+= 	amt;																				},
@@ -105,6 +106,10 @@ class Mod {
 	}
 	addSaveHook(func) { // runs on save
 		saveHooks.push(func);
+		return this;
+	}
+	addTickHook(func) {
+		tickHooks.push(func);
 		return this;
 	}
 	log(str) { // formatted log
@@ -280,15 +285,27 @@ class Strategy { // implementing custom Strategic Modeling strats
 	}
 }
 var cm = new Mod("clipmod", clipmodVersion);
-
+var currentlyLoading = [];
+var modAdded = false;
+var hookRunCheckInterval;
 window.onload = () => {
 	installedModUrls.forEach(url => {
 		let script = document.createElement("script");
 		script.src = url;
-		script.onload = () => displayMessage(`Loaded mod @ ${url}`);
+		script.setAttribute("defer", "");
+		currentlyLoading.push(url);
+		modAdded = true;
+		script.onload = () => {
+			displayMessage(`Loaded mod @ ${url}`);
+			currentlyLoading = currentlyLoading.filter(e => e !== url);
+		}
 		document.head.appendChild(script);
 	});
-	clipInit(); // Run all the hooks
+	hookRunCheckInterval = window.setInterval(() => {
+		if(currentlyLoading.length !== 0 || !modAdded) return; // If all of the mods haven't finished loading, exit early and we'll check in the next 500ms interval
+		window.clearInterval(hookRunCheckInterval);
+		clipInit(); // Run all the hooks
+	}, 500);
 	displayMessage(`ClipMod initialization finished (${cm.versionString})`); // Display a message in the game "console" that ClipMod is all ready
 	displayMessage(`Installed mods: ${installedModids.join(", ")}`);
 };

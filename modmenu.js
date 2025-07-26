@@ -4,7 +4,7 @@
 		() => {
 			modMenu.log("Creating mod interface (toggle with `toggleModMenu();`)");
 
-			const rightCol = document.getElementById("leftColumn");
+			const leftCol = document.getElementById("leftColumn");
 			const parentDiv = document.createElement("div");
 			const areaLabel = document.createElement("b");
 			const modUrlInput = document.createElement("input");
@@ -43,7 +43,7 @@
 			parentDiv.appendChild(document.createElement("br"));
 			parentDiv.appendChild(modRemoveConfirm);
 
-			rightCol.appendChild(parentDiv);
+			leftCol.appendChild(parentDiv);
 
 			modMenu.log("Mod interface created.");
 		}
