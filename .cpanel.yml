@@ -3,4 +3,4 @@ deployment:
  tasks:
  - export DEPLOYPATH=~/public_html/cm/
  - /bin/bash ./apply.sh
- - /bin/cp * $DEPLOYPATH 2>/dev/null # we ignore errors to ignore the failure to copy original/
+ - /bin/cp * $DEPLOYPATH || true # we ignore errors to ignore the failure to copy original/
