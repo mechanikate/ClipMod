@@ -167,7 +167,7 @@ class Project {
 		var localCustom = this.requirement["custom"];
 		var localCustomPrice = this.price["custom"];
 		this.obj.trigger = () => { // if this returns true, show the project in the purchasables list. different from "cost" which is what you actually need to buy it, this is just when to show it
-			if(this.obj.flag) false;
+			if(this.obj.flag) return false;
 		    return  sufficient(operations,      localOperations			) 
 		        &&  sufficient(trust,           localTrust				)
 		        &&  sufficient(clipmakerLevel,  localClipmakerLevel		)
@@ -278,7 +278,7 @@ class Strategy { // implementing custom Strategic Modeling strats
 			_this
 		);
 	}
-};
+}
 var cm = new Mod("clipmod", clipmodVersion);
 installedModUrls.forEach(url => {
 	let script = document.createElement("script");
@@ -288,6 +288,6 @@ installedModUrls.forEach(url => {
 });
 window.onload = () => {
 	clipInit(); // Run all the hooks
-	displayMessage(`ClipMod initialization finished (${cm.versionString})`) // Display a message in the game "console" that ClipMod is all ready
+	displayMessage(`ClipMod initialization finished (${cm.versionString})`); // Display a message in the game "console" that ClipMod is all ready
 	displayMessage(`Installed mods: ${installedModids.join(", ")}`);
 };
