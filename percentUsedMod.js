@@ -1,7 +1,7 @@
 const percentUsedMod = new Mod("percentUsedMod", {major: 0, minor: 1, patch: 0});
 let ele = document.createElement("span");
 ele.id="percentUsedClips";
-ele.innerHTML = "(0% unused)";
+ele.innerHTML = "&nbsp;(0% unused)";
 percentUsedMod.addHook(() => {
 	document.getElementById("unsoldClips").parentNode.insertBefore(ele, document.getElementById("unsoldClips").nextSibling);
 });
