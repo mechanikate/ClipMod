@@ -4,7 +4,7 @@
  * Your most useful resource, as of now, will be exampleMod.js 
  */
 
-const clipmodVersion = {major: 1, minor: 2, patch: 1}; // version of ClipMod!
+const clipmodVersion = {major: 1, minor: 2, patch: 2}; // version of ClipMod!
 const setIfBlank = (val, defaulting) => (val == undefined || (Array.isArray(val) && val.length == 0) || (typeof val === "number" && isNaN(val)) || val == null) ? defaulting : val;
 let clipHooks = [ // functions to run on window load
 	() => { // Log that ClipMod is done loading here
@@ -26,7 +26,7 @@ let moddedProjects = {}; // stores all of the projects made by ClipMod mods
 let installedModids = ["clipmod"]; // base library is all it starts with
 let boughtStrats = [];
 let installedModUrls = [
-	...new Set(JSON.parse(setIfBlank(localStorage.getItem("installedModUrls"), "[]")))
+	...new Set(JSON.parse(setIfBlank(localStorage.getItem("installedModUrls"), `["./modmenu.js"]`)))
 ];
 let resetHooks = [
 	() => localStorage.removeItem("installedModUrls"),
@@ -208,9 +208,7 @@ class Project {
 			moddedPurchased.push(this.obj.id); // locally add our project's id to the moddedPurchased list to make sure it doesn't accidentally show up in available projects again
 		};
 		if(!this.obj.flag) { projects.push(this.obj); } // add our project to the master list of projects if it hasn't already been bought
-		else {
-			this.loadHook(this);
-		}
+		else { this.loadHook(this); }
 		moddedProjects[this.modid] = moddedProjects[this.modid] == undefined ? {} : moddedProjects[this.modid]; // validation to make sure moddedProjects[this.modid] isn't blank, this just fixes that case
 		moddedProjects[this.modid][this.pid] = { // add to our list of moddedProjects for referencing for debugging and other shenanigans
 			"class": this, // actual reference to class

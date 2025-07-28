@@ -67,7 +67,7 @@ diff -crB original/index.html ./index.html
 \ No newline at end of file
 diff -crB original/index2.html ./index2.html
 *** original/index2.html	2018-02-03 17:00:23.000000000 -0500
---- ./index2.html	2025-07-26 17:47:13.357146429 -0400
+--- ./index2.html	2025-07-28 12:54:49.759598663 -0400
 ***************
 *** 1,17 ****
   <html>
@@ -217,7 +217,7 @@ diff -crB original/index2.html ./index2.html
       </body>
 ! </html>
 \ No newline at end of file
---- 895,905 ----
+--- 895,904 ----
               
               
           </div>
@@ -226,7 +226,6 @@ diff -crB original/index2.html ./index2.html
 !         <script type="text/javascript" src="projects.js?v2"></script> 
 ! 		<script type="text/javascript" src="clipmod.js"></script>
 !         <script type="text/javascript" src="main.js?v2"></script>
-! 		<script type="text/javascript" src="modmenu.js"></script>
       </body>
 ! </html>
 Only in ./: logo.png
