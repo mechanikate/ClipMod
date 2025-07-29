@@ -4,7 +4,7 @@
  * Your most useful resource, as of now, will be exampleMod.js 
  */
 
-const clipmodVersion = {major: 1, minor: 2, patch: 2}; // version of ClipMod!
+const clipmodVersion = {major: 1, minor: 2, patch: 3}; // version of ClipMod!
 const setIfBlank = (val, defaulting) => (val == undefined || (Array.isArray(val) && val.length == 0) || (typeof val === "number" && isNaN(val)) || val == null) ? defaulting : val;
 let clipHooks = [ // functions to run on window load
 	() => { // Log that ClipMod is done loading here
@@ -36,6 +36,7 @@ let saveHooks = [
 	() => localStorage.setItem("moddedPurchased", JSON.stringify(moddedPurchased))
 ];
 let tickHooks = [];
+let lastModLoadSuccess = true;
 let [cheatClips, cheatMoney, cheatTrust, cheatOps, cheatCreat, cheatYomi, cheatHypno, zeroMatter] = [ // All of the cheating functions implemented from base game but with variable amounts to cheat in as parameters. Defaults are set to base game defaults
 	(amt = 1e8) => {clips 		+= 	amt;																				},
 	(amt = 1e7) => {funds 		+= 	amt;																				},
@@ -60,10 +61,26 @@ const clampIfNaN = x => typeof x === "number" ? x : 0; // if it is a number, kee
 const toggleCheats = (toggle=true) => [...document.getElementsByClassName("cheatButtons")].forEach(e => e.style.display=toggle ? "inline-block" : "none");
 const toggleModMenu = (toggle=false) => document.getElementById("modManagerDiv").style.display=toggle ? "inline-block" : "none";
 const loadMod = (url="./exampleMod.js") => {
-	installedModUrls.push(url);
-	installedModUrls = [...new Set(installedModUrls)];
-	localStorage.setItem("installedModUrls", JSON.stringify(installedModUrls));
-	window.location.reload();
+	fetch(url, {method: "HEAD"}).then(response => {
+		if(!response.ok) {
+			cm.error(`Mod @ URL ${url} could not be loaded: status ${response.status}`);
+			const urlParams = new URLSearchParams(window.location.search);
+			urlParams.set("success", "false");
+			window.location.search = urlParams;
+		}
+		installedModUrls.push(url);
+		installedModUrls = [...new Set(installedModUrls)];
+		localStorage.setItem("installedModUrls", JSON.stringify(installedModUrls));
+		const urlParams = new URLSearchParams(window.location.search);
+		urlParams.set("success", "true");
+		window.location.search = urlParams;
+	}).catch(e => {
+		cm.error(`Mod @ URL ${url} could not be loaded: ${e.message}`);
+		const urlParams = new URLSearchParams(window.location.search);
+		urlParams.set("success", "false");
+		window.location.search = urlParams;
+
+	});
 };
 const removeMod = (index=0) => {
 	installedModUrls.splice(index, 1);

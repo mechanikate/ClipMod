@@ -1,9 +1,14 @@
 (() => {
 	const modMenu = new Mod("modmenu", {major: 1, minor: 0, patch: 0});
+	const statuses = {
+		"true": "&nbsp;&check;",
+		"false": "&nbsp;&cross;"
+	};
 	modMenu.addHook(
 		() => {
 			modMenu.log("Creating mod interface (toggle with `toggleModMenu();`)");
-
+	
+			const statusParam = new URLSearchParams(window.location.search).get("success");
 			const leftCol = document.getElementById("leftColumn");
 			const parentDiv = document.createElement("div");
 			const areaLabel = document.createElement("b");
@@ -11,8 +16,9 @@
 			const modUrlConfirm = document.createElement("button");
 			const removeModDropdown = document.createElement("select");
 			const modRemoveConfirm = document.createElement("button");
-			
+			const modUrlStatus = document.createElement("span");
 			areaLabel.innerHTML = "ClipMod";
+			modUrlStatus.innerHTML = statusParam ? statuses[statusParam] : "";
 			modRemoveConfirm.innerHTML = "Disable Mod & Reload";
 			modUrlConfirm.innerHTML = "Add Mod & Reload";
 			modUrlInput.setAttribute("type", "text");
@@ -37,6 +43,7 @@
 			parentDiv.appendChild(modUrlInput);
 			parentDiv.appendChild(document.createElement("br"));
 			parentDiv.appendChild(modUrlConfirm);
+			parentDiv.appendChild(modUrlStatus);
 			parentDiv.appendChild(document.createElement("br"));
 			parentDiv.appendChild(document.createElement("br"));
 			parentDiv.appendChild(removeModDropdown);
