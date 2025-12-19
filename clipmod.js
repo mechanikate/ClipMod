@@ -4,7 +4,7 @@
  * Your most useful resource, as of now, will be exampleMod.js 
  */
 
-const clipmodVersion = {major: 1, minor: 2, patch: 3}; // version of ClipMod!
+const clipmodVersion = {major: 1, minor: 3, patch: 0}; // version of ClipMod!
 const setIfBlank = (val, defaulting) => (val == undefined || (Array.isArray(val) && val.length == 0) || (typeof val === "number" && isNaN(val)) || val == null) ? defaulting : val;
 let clipHooks = [ // functions to run on window load
 	() => { // Log that ClipMod is done loading here
@@ -25,12 +25,12 @@ let clipHooks = [ // functions to run on window load
 		moddedManufacturingPurchased = JSON.parse(
 			setIfBlank(localStorage.getItem("moddedManufacturingPurchased"), "{}"));
 		cm.log("Loading purchased manufacturing projects done.");
-		
 	},
 	() => {
 		cm.log("Adding location for Manufacturing projects");
 		let manuDiv = document.createElement("div");
 		manuDiv.id = "cmManufacturingDiv";
+		document.getElementById("megaClipperDiv").appendChild(document.createElement("br"));
 		document.getElementById("megaClipperDiv").parentNode.insertBefore(manuDiv, document.getElementById("megaClipperDiv").nextSibling);
 		cm.log("Adding location for Manufacturing projects done.");
 	}
@@ -123,14 +123,16 @@ function reqsSufficient(reqs) {
 	var localHonor = reqs["honor"];
 	var localProjects = reqs["projects"];
 	var localCustom = reqs["custom"];
-	return  sufficient(operations,      localOperations			) 
-		        &&  sufficient(trust,           localTrust				)
-		        &&  sufficient(clipmakerLevel,  localClipmakerLevel		)
-		        &&  sufficient(storedPower,     localMWs				)
-		        &&  sufficient(yomi,            localYomi				)
-			&& 	sufficient(honor,			localHonor				)
-			&& 	(Array.isArray(localProjects) ? !localProjects.filter(e => !isPurchasedVanilla(e)).length : true)
-			&&  setIfBlank(localCustom,		{f:()=>true}			).f();
+	var localFunds = reqs["funds"];
+	return  sufficient(operations, localOperations) 
+		        &&  sufficient(trust, localTrust)
+		        &&  sufficient(clipmakerLevel, localClipmakerLevel)
+		        &&  sufficient(storedPower, localMWs)
+		        &&  sufficient(yomi, localYomi)
+			&&  sufficient(honor, localHonor)
+			&&  sufficient(funds, localFunds)
+			&&  (Array.isArray(localProjects) ? !localProjects.filter(e => !isPurchasedVanilla(e)).length : true)
+			&&  setIfBlank(localCustom,{f:()=>true}).f();
 }
 class Mod {
 	constructor(modid, version={major: 1, minor: 0, patch: 0}) {
@@ -341,7 +343,7 @@ class Project {
 			"obj": this.obj // internal format of projects (dictionary)
 		};
 		return this; // return back this class for further work/chaining
-	}	
+	}
 }
 class Strategy { // implementing custom Strategic Modeling strats
 	constructor(name, // name of the strategy, usually all caps (e.g. TIT FOR TAT)

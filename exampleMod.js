@@ -39,7 +39,7 @@ myMod.addStrategy(
 	"Be GREEDY 90% of the time and GENEROUS the other 10%", // description for the project (if you make one, which you should)
 	{
 		operations: 5000,
-		projecta: ["projectButton60"]
+		projects: ["projectButton60"]
 	},
 	{ // list of dependencies in "projects" ID array that must be bought before this
 		operations: 1000,
@@ -49,7 +49,7 @@ myMod.addStrategy(
 myMod.addManufacturingProject(
 	"Test",
 	10,
-	{"custom": {"f":()=>funds>5}},
+	{"funds": 100},
 	(v)=>{
 		clipClick(5000*v);
 	},
