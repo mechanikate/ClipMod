@@ -46,3 +46,14 @@ myMod.addStrategy(
 		projects: ["projectButton60"] // this is the ID for "New Strategy: A100"
 	}
 );
+myMod.addManufacturingProject(
+	"Test",
+	10,
+	{"custom": {"f":()=>funds>5}},
+	(v)=>{
+		clipClick(5000*v);
+	},
+	(initPrice, amount) => Math.pow(1.1, amount)+initPrice,
+	false,
+	100
+);

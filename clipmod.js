@@ -19,24 +19,44 @@ let clipHooks = [ // functions to run on window load
 						"[]")
 		);
 		cm.log("Loading already purchased projects done.");
-	}	
+	},
+	() => {
+		cm.log("Loading purchased manufacturing projects");
+		moddedManufacturingPurchased = JSON.parse(
+			setIfBlank(localStorage.getItem("moddedManufacturingPurchased"), "{}"));
+		cm.log("Loading purchased manufacturing projects done.");
+		
+	},
+	() => {
+		cm.log("Adding location for Manufacturing projects");
+		let manuDiv = document.createElement("div");
+		manuDiv.id = "cmManufacturingDiv";
+		document.getElementById("megaClipperDiv").parentNode.insertBefore(manuDiv, document.getElementById("megaClipperDiv").nextSibling);
+		cm.log("Adding location for Manufacturing projects done.");
+	}
 ];
 let moddedPurchased = []; // all purchased project *ids* go here!
 let moddedProjects = {}; // stores all of the projects made by ClipMod mods
 let installedModids = ["clipmod"]; // base library is all it starts with
+let moddedManufacturingPurchased = {};
+let moddedManufacturingClasses = {};
 let boughtStrats = [];
 let installedModUrls = [
 	...new Set(JSON.parse(setIfBlank(localStorage.getItem("installedModUrls"), `["./modmenu.js"]`)))
 ];
 let resetHooks = [
 	() => localStorage.removeItem("installedModUrls"),
-	() => localStorage.removeItem("moddedPurchased")
+	() => localStorage.removeItem("moddedPurchased"),
+	() => localStorage.removeItem("moddedManufacturingPurchased")
 ];
 let saveHooks = [
-	() => localStorage.setItem("moddedPurchased", JSON.stringify(moddedPurchased))
+	() => localStorage.setItem("moddedPurchased", JSON.stringify(moddedPurchased)),
+	() => localStorage.setItem("moddedManufacturingPurchased", JSON.stringify(moddedManufacturingPurchased))
 ];
 let tickHooks = [];
 let lastModLoadSuccess = true;
+let displayErrorsOnScreen = true; // should we display error messages to the on-screen log too?
+
 let [cheatClips, cheatMoney, cheatTrust, cheatOps, cheatCreat, cheatYomi, cheatHypno, zeroMatter] = [ // All of the cheating functions implemented from base game but with variable amounts to cheat in as parameters. Defaults are set to base game defaults
 	(amt = 1e8) => {clips 		+= 	amt;																				},
 	(amt = 1e7) => {funds 		+= 	amt;																				},
@@ -60,26 +80,33 @@ const sufficient = (balance, price) => (typeof price === "number" && typeof bala
 const clampIfNaN = x => typeof x === "number" ? x : 0; // if it is a number, keep. if it isn't a number, set to 0.
 const toggleCheats = (toggle=true) => [...document.getElementsByClassName("cheatButtons")].forEach(e => e.style.display=toggle ? "inline-block" : "none");
 const toggleModMenu = (toggle=false) => document.getElementById("modManagerDiv").style.display=toggle ? "inline-block" : "none";
+const forceLoadMod = (url="./exampleMod.js", markSuccess=true, warn=true) => {
+	const urlParams = new URLSearchParams(window.location.search);
+	if(warn) cm.warn("forceLoadMod forces a mod to be loaded NO MATTER if it's not accessible/if you have no internet, meaning your save might get broken! Use with caution.");
+	installedModUrls.push(url); // push URL to installedModUrls
+	installedModUrls = [...new Set(installedModUrls)]; // remove duplicates in installedModUrls
+	localStorage.setItem("installedModUrls", JSON.stringify(installedModUrls)); // save the modUrls
+	if(!markSuccess) return window.location.reload(); // exit early if we don't assume we're marking this as a sucess no matter what
+	refreshSuccess(true);
+};
+const refreshSuccess = (successValue, url="", error="") => {
+	const urlParams = new URLSearchParams(window.location.search);
+	urlParams.set("success", successValue.toString());
+	if(!successValue && url) urlParams.set("modUrl", url);
+	if(!successValue && error) urlParams.set("errorMessage", error);
+	window.location.search = urlParams;
+};
 const loadMod = (url="./exampleMod.js") => {
+	if(/^(\.+\/)|([~\/])|(file:\/\/)/.test(url)) return forceLoadMod(url, false, false); // match paths starting with anything that indicates it's a local file to handle locally stored mods
 	fetch(url, {method: "HEAD"}).then(response => {
 		if(!response.ok) {
 			cm.error(`Mod @ URL ${url} could not be loaded: status ${response.status}`);
-			const urlParams = new URLSearchParams(window.location.search);
-			urlParams.set("success", "false");
-			window.location.search = urlParams;
+			refreshSuccess(false, url, `status code ${response.status} returned.`);
 		}
-		installedModUrls.push(url);
-		installedModUrls = [...new Set(installedModUrls)];
-		localStorage.setItem("installedModUrls", JSON.stringify(installedModUrls));
-		const urlParams = new URLSearchParams(window.location.search);
-		urlParams.set("success", "true");
-		window.location.search = urlParams;
+		forceLoadMod(url, true, false);
 	}).catch(e => {
 		cm.error(`Mod @ URL ${url} could not be loaded: ${e.message}`);
-		const urlParams = new URLSearchParams(window.location.search);
-		urlParams.set("success", "false");
-		window.location.search = urlParams;
-
+		refreshSuccess(false, url, e.message);
 	});
 };
 const removeMod = (index=0) => {
@@ -87,11 +114,30 @@ const removeMod = (index=0) => {
 	localStorage.setItem("installedModUrls", JSON.stringify(installedModUrls));
 	window.location.reload();
 };
+function reqsSufficient(reqs) {
+	var localOperations = reqs["operations"];
+	var localTrust = reqs["trust"];
+	var localClipmakerLevel = reqs["clipmaker_level"];
+	var localMWs = reqs["mws"];
+	var localYomi = reqs["yomi"];
+	var localHonor = reqs["honor"];
+	var localProjects = reqs["projects"];
+	var localCustom = reqs["custom"];
+	return  sufficient(operations,      localOperations			) 
+		        &&  sufficient(trust,           localTrust				)
+		        &&  sufficient(clipmakerLevel,  localClipmakerLevel		)
+		        &&  sufficient(storedPower,     localMWs				)
+		        &&  sufficient(yomi,            localYomi				)
+			&& 	sufficient(honor,			localHonor				)
+			&& 	(Array.isArray(localProjects) ? !localProjects.filter(e => !isPurchasedVanilla(e)).length : true)
+			&&  setIfBlank(localCustom,		{f:()=>true}			).f();
+}
 class Mod {
 	constructor(modid, version={major: 1, minor: 0, patch: 0}) {
 		this.modid = modid;
 		this.basePid = 1;
 		this.projects = [];
+		this.manuProjects = [];
 		this.strats = [];
 		this.version = version;
 		this.versionString = `v${this.version.major}.${this.version.minor}.${this.version.patch}`;
@@ -101,6 +147,13 @@ class Mod {
 		let ourProject = new Project(name, description, this.basePid, price, requirement, display, todo, this.modid);
 		this.projects.push(ourProject);
 		clipHooks.push(() => ourProject.setup());
+		this.basePid++;
+		return this;
+	}
+	addManufacturingProject(name, price, requirement, todo, priceFormula = (initPrice,amount) => Math.pow(1.1, amount)+initPrice, splitIntervals = true, todoRunInterval=1000) {
+		let ourManuProj = new ManufacturingProject(name, this.basePid, price, requirement, todo, this.modid, priceFormula);
+		this.manuProjects.push(ourManuProj);
+		clipHooks.push(() => ourManuProj.setup());
 		this.basePid++;
 		return this;
 	}
@@ -125,7 +178,7 @@ class Mod {
 		saveHooks.push(func);
 		return this;
 	}
-	addTickHook(func) {
+	addTickHook(func) { // runs every game tick
 		tickHooks.push(func);
 		return this;
 	}
@@ -137,6 +190,90 @@ class Mod {
 	}
 	error(str) {
 		console.log(`%c(error: ${this.modid} @ ${new Date().toLocaleTimeString()})`+`%c ${str}`, `font-weight:bold;color:#f00000;`,`color:#f00000`); 
+		if(displayErrorsOnScreen) displayMessage(`<span style="color: red;">(error: ${this.modid} @ ${new Date().toLocaleTimeString()}) ${str}</div>`);
+	}
+}
+class ManufacturingProject { // Project for Manufacturing-tab resources, like AutoClippers and MegaClippers
+	constructor(name, pid, price, requirement, todo, modid, priceFormula = (initPrice, amount) => Math.pow(1.1, amount)+initPrice, todoParameter=true, todoRunInterval=1000) { 
+		this.name = name;
+		this.pid = pid;
+		this.initPrice = price;
+		this.requirement = requirement;
+		this.todo = todo;
+		this.modid = modid;
+		this.priceFormula = amount => priceFormula(this.initPrice, amount);
+		this.divId = this.modid+"ManuProject"+this.pid;
+		this.ident = `${this.modid}:${this.pid}`;
+		this.price = priceFormula(this.initPrice, setIfBlank(moddedManufacturingPurchased[this.ident],0));
+		this.todoRunInterval = todoRunInterval;
+		this.todoParameter = todoParameter; // if true, pass times to run per second (calculated from todoRunInterval/<total machines>) to this.todo(...) and run only once per interval
+		moddedManufacturingClasses[this.ident] = this;
+
+		if(moddedManufacturingPurchased[this.ident] != 0) {
+			if(todoParameter) window.setInterval(() => this.todo(moddedManufacturingPurchased[this.ident]), this.todoRunInterval);
+			else for(let i=0; i<moddedManufacturingPurchased[this.ident]; i++) 
+				window.setInterval(() => this.todo(1), this.todoRunInterval/moddedManufacturingPurchased[this.ident]);
+		}
+	}
+	update() {
+		if(!document.getElementById(this.divId)) return cm.error(`Failed to register ${this.modid}:${this.pid}, parent element does not exist`);
+		document.getElementById(`${this.divId}Price`).innerHTML = addCommas(Math.floor(this.priceFormula(moddedManufacturingPurchased[this.ident])*100)/100);
+		document.getElementById(`${this.divId}Count`).innerHTML = " "+moddedManufacturingPurchased[this.ident];
+	}
+	tick(_this = this) {
+		if(reqsSufficient(_this.requirement)) document.getElementById(_this.divId).style.display = "";
+		if(funds >= _this.price) document.getElementById(`${_this.divId}Button`).removeAttribute("disabled");
+		else document.getElementById(`${_this.divId}Button`).setAttribute("disabled", "");
+	}
+	setup() {
+		let _this = this;
+		let mainDiv = document.createElement("div");
+		mainDiv.id = this.divId;
+
+		let buyAmountP = document.createElement("p");
+		buyAmountP.classList.add("engineText5");
+
+		let buyButton = document.createElement("button");
+		buyButton.id = this.divId+"Button";
+		buyButton.innerHTML = this.name;
+		buyButton.classList.add("button2");
+		buyButton.setAttribute("disabled","");
+		buyButton.setAttribute("onclick", `moddedManufacturingClasses["${this.ident}"].buy();`);
+		buyAmountP.appendChild(buyButton);
+
+		let amountSpan = document.createElement("span");
+		buyButton.classList.add("engineText6");
+		amountSpan.id = this.divId+"Count";
+		amountSpan.innerHTML = setIfBlank(moddedManufacturingPurchased[this.ident], " 0");
+		buyAmountP.appendChild(amountSpan);
+
+		mainDiv.appendChild(buyAmountP);
+
+		mainDiv.innerHTML += "\nCost: $";
+
+		let costSpan = document.createElement("span");
+		costSpan.id = `${this.divId}Price`;
+		costSpan.innerHTML = addCommas(Math.floor(this.priceFormula(setIfBlank(moddedManufacturingPurchased[this.ident],0))*100)/100);
+		mainDiv.append(costSpan);
+
+		mainDiv.appendChild(document.createElement("br"));
+		mainDiv.appendChild(document.createElement("br"));
+
+		mainDiv.style.display="none";
+
+		document.getElementById("cmManufacturingDiv").appendChild(mainDiv);
+
+		tickHooks.push(() => this.tick(this));
+	}
+	buy() {
+		if(funds < this.price) return;
+		funds -= this.price;
+		if(!moddedManufacturingPurchased[this.ident]) moddedManufacturingPurchased[this.ident] = 0;
+		moddedManufacturingPurchased[this.ident]++;
+		this.price = this.priceFormula(moddedManufacturingPurchased[this.ident]);
+		window.setInterval(() => this.todo(1), this.todoRunInterval);
+
+		this.update();
 	}
 }
 class Project {
@@ -173,41 +310,13 @@ class Project {
 		this.obj.priceTag = this.priceTag(); // price tag next to the title (e.g. "(10,000 ops, 10 trust, 5,000 MW-seconds)", etc.)
 		this.obj.description = this.description; // text below the title and price tag to describe what this does
  		// self-explanatory, eventually all of these shouldn't need variable names for things starting local but I don't feel like changing this for now
-		var localOperations = this.requirement["operations"];
-		var localOperationsPrice = this.price["operations"];
-		var localTrust = this.requirement["trust"];
-		var localTrustPrice = this.price["trust"];
-		var localClipmakerLevel = this.requirement["clipmaker_level"];
-		var localClipmakerLevelPrice = this.price["clipmaker_level"];
-		var localMWs = this.price["mws"];
-		var localMWsPrice = this.requirement["mws"];
-		var localYomi = this.requirement["yomi"];
-		var localYomiPrice = this.price["yomi"];
-		var localHonor = this.requirement["honor"];
-		var localHonorPrice = this.price["honor"];
-		var localProjects = this.requirement["projects"];
-		var localCustom = this.requirement["custom"];
-		var localCustomPrice = this.price["custom"];
 		this.obj.trigger = () => { // if this returns true, show the project in the purchasables list. different from "cost" which is what you actually need to buy it, this is just when to show it
 			if(this.obj.flag) return false;
-		    return  sufficient(operations,      localOperations			) 
-		        &&  sufficient(trust,           localTrust				)
-		        &&  sufficient(clipmakerLevel,  localClipmakerLevel		)
-		        &&  sufficient(storedPower,     localMWs				)
-		        &&  sufficient(yomi,            localYomi				)
-				&& 	sufficient(honor,			localHonor				)
-				&& 	(Array.isArray(localProjects) ? !localProjects.filter(e => !isPurchasedVanilla(e)).length : true)
-				&&  setIfBlank(localCustom,		{f:()=>true}			).f();
+			return reqsSufficient(this.requirement);
 		};
 		this.obj.uses = this.uses;
 		this.obj.cost = () => { // can we buy this thing?
-	        return  sufficient(operations,      localOperationsPrice    ) 
-		        &&  sufficient(trust,           localTrustPrice         )
-		        &&  sufficient(clipmakerLevel,  localClipmakerLevelPrice)
-		        &&  sufficient(storedPower,     localMWsPrice           )
-		        &&  sufficient(yomi,            localYomiPrice          )
-				&& 	sufficient(honor,			localHonorPrice			)
-				&& 	setIfBlank(localCustomPrice,{f:()=>true}			).f();
+			return reqsSufficient(this.price);
 		};
 		this.obj.flag = +moddedPurchased.includes(this.obj.id); // unary plus (+moddedPurch...) converts true/false to 1/0 respectively. otherwise, this just gets if we've already bought this and returns 1 if so to make sure we don't show it for purchase multiple times
 		this.obj.effect = () => { // on purchase events
@@ -324,3 +433,4 @@ window.onload = () => {
 	displayMessage(`ClipMod initialization finished (${cm.versionString})`); // Display a message in the game "console" that ClipMod is all ready
 	displayMessage(`Installed mods: ${installedModids.join(", ")}`);
 };
+

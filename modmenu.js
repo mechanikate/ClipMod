@@ -7,8 +7,11 @@
 	modMenu.addHook(
 		() => {
 			modMenu.log("Creating mod interface (toggle with `toggleModMenu();`)");
-	
+
 			const statusParam = new URLSearchParams(window.location.search).get("success");
+			const modUrlParam = new URLSearchParams(window.location.search).get("modUrl");
+			const errorMessageParam = new URLSearchParams(window.location.search).get("errorMessage");
+			if(statusParam == "false") modMenu.error(`Failed to load ${modUrlParam || "mod"}: ${errorMessageParam || "reason unknown"}`); // if we encountered an error loading and we specified the modUrl search param
 			const leftCol = document.getElementById("leftColumn");
 			const parentDiv = document.createElement("div");
 			const areaLabel = document.createElement("b");
@@ -30,14 +33,14 @@
 			removeModDropdown.id = "removeModDropdown";
 			modRemoveConfirm.classList = "button2";
 			parentDiv.id = "modManagerDiv";
-			
+
 			installedModUrls.forEach((e,i) => { // add all mod urls to dropdown for disabling
 				const selectDropdown = document.createElement("option");
 				selectDropdown.setAttribute("value", i);
 				selectDropdown.innerHTML=e;
 				removeModDropdown.appendChild(selectDropdown);
 			});
-			
+
 			parentDiv.appendChild(areaLabel);
 			parentDiv.appendChild(document.createElement("hr"));
 			parentDiv.appendChild(modUrlInput);
